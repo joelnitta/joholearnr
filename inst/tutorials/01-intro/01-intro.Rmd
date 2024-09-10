@@ -17,7 +17,7 @@ gradethis::gradethis_setup()
 
 ## Rを計算機として使う
 
-###
+### 1. 足し算
 
 R は最も単純な形では、対話型の計算機として使用できます。
 
@@ -35,7 +35,7 @@ grade_result(
 )
 ```
 
-### 引き算
+### 2. 引き算
 
 - `-` を使って、4を11から引きなさい。
 
@@ -49,7 +49,7 @@ grade_result(
 )
 ```
 
-### 掛け算
+### 3. 掛け算
 
 - `*` を使って、7を3に掛けなさい。
 
@@ -63,7 +63,7 @@ grade_result(
 )
 ```
 
-### 割り算
+### 4. 割り算
 
 - `/` を使って、6 を 2 で割りなさい。
 
@@ -77,7 +77,7 @@ grade_result(
 )
 ```
 
-### 演算の順序
+### 5. 演算の順序
 
 - `()`を使って、2を5から引いた後に、その結果を8に掛けなさい。
 
@@ -99,7 +99,7 @@ grade_this_code()
 
 ## オブジェクトについて
 
-###
+### 6. オブジェクトの保存
 
 R では、計算結果などをオブジェクトに保存できます。これはセッション中に計算を後で再利用したい場合に便利です。
 
@@ -120,7 +120,7 @@ x <- 8 - 1
 grade_this_code()
 ```
 
-### オブジェクトの確認
+### 7. オブジェクトの確認
 
 今までの計算機としてのRの使い方では、計算結果がすぐに画面に出てきましたが、割り当て文`<-`を使うと、計算結果がオブジェクトとして保存されるのですぐに出てきません。
 
@@ -143,7 +143,7 @@ y
 grade_this_code()
 ```
 
-### オブジェクトの上書き
+### オブジェクトの上書き（例）
 
 すでに存在しているオブジェクトに新しい値を割り当てると、（何も報告なしに）中身が上書きされます。
 
@@ -158,7 +158,7 @@ y <- 10
 y
 ```
 
-###
+### 8. オブジェクトの上書き
 
 元々の値を取っておきたい場合は、その結果を**別の**オブジェクトとして保存してから、新しい値を割り当てます。
 
@@ -188,7 +188,7 @@ y1
 grade_this_code()
 ```
 
-### オブジェクトの名前
+### 9. オブジェクトの名前
 
 オブジェクトの名前の付け方はいつかのルールがあります。例えば、オブジェクトの名前は文字から始める必要があって、文字、数字、`_`、`.`のみ使用できます。
 
@@ -207,6 +207,8 @@ question("以下のオブジェクトの名前のどれがRのルールに従っ
   allow_retry = TRUE
 )
 ```
+
+### 10. 名前をTabキーで書く
 
 そして、Rには名前を打つときに便利な機能があります：Tabキーを押すと、名前を自動的に完成させてくれます。
 この機能を使えば、意味のある名前がもっと作りやすいし、名前が長くてもすぐに（そして、正確に）出てきますので、是非使ってください。
@@ -230,12 +232,89 @@ this_is_a_really_long_name
 grade_this_code()
 ```
 
-## 投稿
+## 確認と投稿
+
+```{r context="server"}
+shiny::observeEvent(
+  input$check,
+  {
+    # Extract all questions in tutorial
+ 
+    # IMPORTANT: Exclude any with "example" in chunk label
+    # (should not be included in grading)
+    tutorial_info <- learnr::get_tutorial_info()
+    questions <- tutorial_info$items[, c("order", "label", "type")] |>
+      dplyr::filter(!stringr::str_detect(label, "-example")) |>
+      dplyr::arrange("order")
+
+    questions <- questions |>
+      dplyr::mutate(order = seq_len(nrow(questions)))
+
+    # Extract state of exercises (correct or not)
+    # tutorial_state is list with one item per submitted exercise or question.
+    # If it hasn't been submitted yet, it won't appear in the list
+    tutorial_state <- learnr:::get_tutorial_state()
+
+    # Extract answers (correct or incorrect) as dataframe
+    if(length(tutorial_state) > 0) {
+      answers <-
+      tibble::tibble(
+        label = names(tutorial_state),
+        correct = purrr::map_chr(tutorial_state, "correct"),
+        timestamp = purrr::map_chr(tutorial_state, "timestamp")
+      )
+    } else {
+      answers <- tibble::tibble(
+        label = questions$label,
+        correct = NA_character_)
+    }
+
+    # Combine questions and answers into summary
+    summary <- dplyr::left_join(questions, answers, by = "label")
+
+    # Calculate current score
+    n_correct <- sum(as.logical(summary$correct), na.rm = TRUE)
+    n_total <- nrow(summary)
+    score <- round(n_correct / n_total, 1) * 100
+    score_text <- paste0(
+      "You have answered ",
+      n_correct,
+      "/",
+      n_total,
+      " questions correctly. ",
+      "Your score is ", score, "%."
+    )
+
+    # For debugging only
+    output$state = shiny::renderText(
+      paste(
+        capture.output(str(tutorial_info)),
+        collapse = "\n"
+      )
+    )
+    output$summary_table = shiny::renderTable(summary)
+    output$score_text = shiny::renderText(score_text)
+
+    invisible()
+  }
+)
+```
+
+```{r state, echo=FALSE}
+shiny::actionButton("check", "Check answers")
+shiny::br()
+shiny::br()
+shiny::textOutput("score_text")
+shiny::tableOutput("summary_table")
+# For debugging only
+# learnrhash:::wrapped_verbatim_text_output("state")
+```
 
 ```{r context="server"}
 learnrhash::encoder_logic()
 ```
 
 ```{r encode, echo=FALSE}
-learnrhash::encoder_ui()
+moodle <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655&action=editsubmission"
+learnrhash::encoder_ui(ui_before = learnrhash::default_ui(url = moodle))
 ```
