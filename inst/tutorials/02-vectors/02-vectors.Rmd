@@ -1,0 +1,296 @@
+
+---
+title: "R入門（２）"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(gradethis)
+library(learnr)
+library(joholearnr)
+gradethis::gradethis_setup()
+```
+
+## オブジェクトに複数の値を入れる
+
+### `c()`の使い方
+
+今までのオブジェクトは一つだけの値が入っていた。でも、複数の値を入れることもできる。
+
+複数の値を入れるには、`c()`を使う。
+
+下のコードを実行してみよう：
+
+```{r concat-example, exercise = TRUE, exercise.lines = 2}
+x <- c(2, 4, 6)
+x
+```
+
+`x`には三つの値（2と4と6）が入りました。
+
+Rでは、このようなオブジェクトを**「ベクトル」**（vector）と呼ぶ。
+
+ベクトルのそれぞれの値を**「要素」**（element）と呼ぶ。
+
+`x`の２番目の要素は`4`です。
+
+### センチメートルのベクトルを作る
+
+- Q1: `c()`を使って、45, 55, 33という値を`length_cm`に入れてください。
+
+```{r make-length-cm, exercise = TRUE, exercise.lines = 2}
+length_cm <- ____
+```
+
+```{r make-length-cm-solution}
+length_cm <- c(45, 55, 33)
+```
+
+```{r make-length-cm-check}
+grade_this_code()
+```
+
+## ベクトルの計算
+
+ベクトルの便利なところは、一気にベクトルの要素を全て同じように計算できるところです。
+
+例えば、`x`のそれぞれの要素を2で割る：
+
+```{r vector-calc-example, exercise = TRUE, exercise.lines = 2}
+x <- c(2, 4, 6)
+x / 2
+```
+
+- Q2: `length_cm`をインチに変換してください（新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はインチの値にしないといけない）。
+
+```{r cm-convert, exercise = TRUE, exercise.lines = 2, exercise.setup = "make-length-cm-solution"}
+
+```
+
+```{r cm-convert-check}
+grade_result(
+  pass_if(~ identical(.result, c(45, 55, 33) / 2.54))
+)
+```
+
+## ベクトルの種類
+
+今までは、数字しか扱って来なかったが、Rには他のベクトルの種類がある。Rでは、ベクトルの種類を**「クラス」**（class）と呼ぶ。他の種類のベクトルも作り方は数字ベクトルと同じです:`c()`を使う。
+
+例えば、文字ベクトル：
+
+```{r character-example, exercise = TRUE, exercise.lines = 2}
+fruits <- c("banana", "apple", "kiwi")
+fruits
+```
+
+**注意：** 文字ベクトルを作るとき、データ（値）を**引用符**（`"`）で囲まないといけない。そうしないと、Rはそれが他のオブジェクトの名前だと思ってしまうからです。
+
+- Q3: 文字ベクトルを作ってください（新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力は文字ベクトルにしないといけない）。
+
+```{r make-char-vec, exercise = TRUE, exercise.lines = 2}
+
+```
+
+```{r make-char-vec-check}
+grade_result(
+  pass_if(~ identical(typeof(.result), "character"))
+)
+```
+
+### 論理ベクトル
+
+もう一つのベクトルの種類がある：**論理ベクトル**
+
+例えば、コインを３回投げた結果を論理ベクトルとして保存しましょう：
+
+```{r logical-example, exercise = TRUE, exercise.lines = 2}
+coin_flip_results <- c(TRUE, FALSE, TRUE)
+coin_flip_results
+```
+
+文字ベクトルと違って、論理ベクトルに入れらる値は`TRUE`か`FALSE`しかなく、引用符を使わない。
+
+- Q4: 論理ベクトルを作ってください（新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力は論理ベクトルにしないといけない）。
+
+```{r make-log-vec, exercise = TRUE, exercise.lines = 2}
+
+```
+
+```{r make-log-vec-check}
+grade_result(
+  pass_if(~ identical(typeof(.result), "logical"))
+)
+```
+
+### ベクトルの種類の確認
+
+ベクトルの種類を確認するには、`typof()`を使う。
+
+例えば：
+
+```{r check-type-example, exercise = TRUE, exercise.lines = 2}
+x <- c(2, 4, 6)
+typeof(x)
+```
+
+（ちょっと分かりずらいですが、Rでは"double"は「数字」という意味があります）
+
+### ベクトルの種類を確認しましょう
+
+- Q5: `typeof()`を使って、`fruits`の種類を確認してください
+
+```{r fruits-prep, include = FALSE}
+fruits <- c("banana", "apple", "kiwi")
+```
+
+```{r fruits-type, exercise = TRUE, exercise.lines = 2, exercise.setup = "fruits-prep"}
+
+```
+
+```{r fruits-type-check}
+grade_result(
+  pass_if(~ identical(.result, typeof(fruits)))
+)
+```
+
+- Q6: `typeof()`を使って、`length_cm`の種類を確認してください
+
+```{r length-cm-type, exercise = TRUE, exercise.lines = 2, exercise.setup = "make-length-cm-solution"}
+
+```
+
+```{r length-cm-type-check}
+grade_result(
+  pass_if(~ identical(.result, typeof(length_cm)))
+)
+```
+
+## 関数について
+
+今まで使ってきた`c()`や`typeof()`はRでは**「関数」**（function）というものです。
+
+関数は何かの入力を引き受け、それに対して何かの処理をして、出力を返すものです。
+
+- `c()`は入力した値を統合させて、一つのベクトルを返す関数です。
+- `typeof()`は入力したオブジェクトの種類を返す関数です。
+
+関数の書き方は必ず関数名をまず書いて、その後に括弧の中に入力を書きます。
+
+早速、新しい関数を使ってみましょう。まず、`length_in`（インチ単位の長さのベクトル）を作ります：
+
+```{r length-in-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "make-length-cm-solution"}
+length_in <- length_cm / 2.54
+length_in
+```
+
+`length_in`の少数を切り捨てたいとしましょう。Rでは、少数を切り捨てる関数は`round()`です。
+
+- Q7: `round()`を使って、`length_in`の少数を切り捨ててください。
+
+```{r length-in-round-prep, include = FALSE, exercise.setup = "make-length-cm-solution"}
+length_in <- length_cm / 2.54
+```
+
+```{r length-in-round, exercise = TRUE, exercise.lines = 2, exercise.setup = "length-in-round-prep"}
+
+```
+
+```{r length-in-round-solution}
+round(length_in)
+```
+
+```{r length-in-round-check}
+grade_this_code()
+```
+
+## 確認と投稿
+
+```{r context="server"}
+shiny::observeEvent(
+  input$check,
+  {
+    # Extract all questions in tutorial
+ 
+    # IMPORTANT: Exclude any with "example" in chunk label
+    # (should not be included in grading)
+    tutorial_info <- learnr::get_tutorial_info()
+    questions <- tutorial_info$items[, c("order", "label", "type")] |>
+      dplyr::filter(!stringr::str_detect(label, "-example")) |>
+      dplyr::arrange("order")
+
+    questions <- questions |>
+      dplyr::mutate(order = seq_len(nrow(questions)))
+
+    # Extract state of exercises (correct or not)
+    # tutorial_state is list with one item per submitted exercise or question.
+    # If it hasn't been submitted yet, it won't appear in the list
+    tutorial_state <- learnr:::get_tutorial_state()
+
+    # Extract answers (correct or incorrect) as dataframe
+    if(length(tutorial_state) > 0) {
+      answers <-
+      tibble::tibble(
+        label = names(tutorial_state),
+        correct = purrr::map_chr(tutorial_state, "correct"),
+        timestamp = purrr::map_chr(tutorial_state, "timestamp")
+      )
+    } else {
+      answers <- tibble::tibble(
+        label = questions$label,
+        correct = NA_character_)
+    }
+
+    # Combine questions and answers into summary
+    summary <- dplyr::left_join(questions, answers, by = "label")
+
+    # Calculate current score
+    n_correct <- sum(as.logical(summary$correct), na.rm = TRUE)
+    n_total <- nrow(summary)
+    score <- round(n_correct / n_total, 1) * 100
+    score_text <- paste0(
+      "You have answered ",
+      n_correct,
+      "/",
+      n_total,
+      " questions correctly. ",
+      "Your score is ", score, "%."
+    )
+
+    # For debugging only
+    output$state = shiny::renderText(
+      paste(
+        capture.output(str(tutorial_info)),
+        collapse = "\n"
+      )
+    )
+    output$summary_table = shiny::renderTable(summary)
+    output$score_text = shiny::renderText(score_text)
+
+    invisible()
+  }
+)
+```
+
+```{r state, echo=FALSE}
+shiny::actionButton("check", "Check answers")
+shiny::br()
+shiny::br()
+shiny::textOutput("score_text")
+shiny::tableOutput("summary_table")
+# For debugging only
+# learnrhash:::wrapped_verbatim_text_output("state")
+```
+
+```{r context="server"}
+learnrhash::encoder_logic()
+```
+
+```{r encode, echo=FALSE}
+moodle <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655&action=editsubmission"
+learnrhash::encoder_ui(ui_before = learnrhash::default_ui(url = moodle))
+```
