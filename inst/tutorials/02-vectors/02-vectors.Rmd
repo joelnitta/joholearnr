@@ -1,6 +1,6 @@
 
 ---
-title: "R入門（２）"
+title: "R入門（２）："
 output:
   learnr::tutorial:
     progressive: true
@@ -13,11 +13,14 @@ library(gradethis)
 library(learnr)
 library(joholearnr)
 gradethis::gradethis_setup()
+# do this just to maintain dep on {praise} so it will be installed in the
+# shiny app
+invisible(praise::praise())
 ```
 
-## オブジェクトに複数の値を入れる
+## ベクトルについて
 
-### `c()`の使い方
+### ベクトルの作り方
 
 今までのオブジェクトは一つだけの値が入っていた。でも、複数の値を入れることもできる。
 
@@ -38,7 +41,7 @@ Rでは、このようなオブジェクトを**「ベクトル」**（vector）
 
 `x`の２番目の要素は`4`です。
 
-### センチメートルのベクトルを作る
+###
 
 - Q1: `c()`を使って、45, 55, 33という値を`length_cm`に入れてください。
 
@@ -54,7 +57,7 @@ length_cm <- c(45, 55, 33)
 grade_this_code()
 ```
 
-## ベクトルの計算
+### ベクトルの計算
 
 ベクトルの便利なところは、一気にベクトルの要素を全て同じように計算できるところです。
 
@@ -64,6 +67,8 @@ grade_this_code()
 x <- c(2, 4, 6)
 x / 2
 ```
+
+###
 
 - Q2: `length_cm`をインチに変換してください（新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はインチの値にしないといけない）。
 
@@ -77,9 +82,9 @@ grade_result(
 )
 ```
 
-## ベクトルの種類
+### ベクトルの種類
 
-今までは、数字しか扱って来なかったが、Rには他のベクトルの種類がある。Rでは、ベクトルの種類を**「クラス」**（class）と呼ぶ。他の種類のベクトルも作り方は数字ベクトルと同じです:`c()`を使う。
+今までは、数字しか扱って来なかったが、Rには他のベクトルの種類がある。Rでは、ベクトルの種類を**「型」**（type）と呼ぶ。他の種類のベクトルも作り方は数字ベクトルと同じです:`c()`を使う。
 
 例えば、文字ベクトル：
 
@@ -88,7 +93,13 @@ fruits <- c("banana", "apple", "kiwi")
 fruits
 ```
 
-**注意：** 文字ベクトルを作るとき、データ（値）を**引用符**（`"`）で囲まないといけない。そうしないと、Rはそれが他のオブジェクトの名前だと思ってしまうからです。
+**注意：** 文字ベクトルを作るとき、データ（値）を**引用符**（`"`）で囲まないといけない。そうしないと、Rはそれが他のオブジェクトの名前だと思ってしまい、エラーが出る。
+
+```{r character-error-example, exercise = TRUE, error = TRUE}
+fruits <- c(banana, apple, kiwi)
+```
+
+###
 
 - Q3: 文字ベクトルを作ってください（新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力は文字ベクトルにしないといけない）。
 
@@ -115,6 +126,8 @@ coin_flip_results
 
 文字ベクトルと違って、論理ベクトルに入れらる値は`TRUE`か`FALSE`しかなく、引用符を使わない。
 
+###
+
 - Q4: 論理ベクトルを作ってください（新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力は論理ベクトルにしないといけない）。
 
 ```{r make-log-vec, exercise = TRUE, exercise.lines = 2}
@@ -129,7 +142,7 @@ grade_result(
 
 ### ベクトルの種類の確認
 
-ベクトルの種類を確認するには、`typof()`を使う。
+ベクトルの種類（型）を確認するには、`typof()`を使う。
 
 例えば：
 
@@ -140,7 +153,7 @@ typeof(x)
 
 （ちょっと分かりずらいですが、Rでは"double"は「数字」という意味があります）
 
-### ベクトルの種類を確認しましょう
+###
 
 - Q5: `typeof()`を使って、`fruits`の種類を確認してください
 
@@ -170,6 +183,39 @@ grade_result(
 )
 ```
 
+### データ型の自動変換
+
+Rでは、あるベクトルには一つの型しか持てないというルールがあります。
+
+なので、異なる型のデータを結合させようとすると、自動的に同じ型に変換されます。
+
+例えば、
+
+```{r combine-vec-types-example, exercise = TRUE, exercise.lines = 2}
+c(1, 2, "apple", "banana")
+```
+
+引用符`"`が付いているというのは、文字であることを示します。つまり、上のコードの出力の`"1"`は数字ではなく、文字です。
+
+###
+
+- Q7: 以下のコードを実行してください。結果の型はどれでしょうか？
+
+```{r combine-type-example, exercise = TRUE, exercise.lines = 2}
+c(TRUE, FALSE, 1, 0)
+```
+
+```{r object-name, echo=FALSE}
+question("一つ選んでください：",
+  answer("論理", message = "論理ベクトルはTRUEかFALSE"),
+  answer("文字", message = "文字ベクトルの要素は引用符が付いている"),
+  answer("数字", correct = TRUE),
+  answer("句読点", message = "Rに「句読点」というデータ型が存在しない"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
 ## 関数について
 
 今まで使ってきた`c()`や`typeof()`はRでは**「関数」**（function）というものです。
@@ -190,7 +236,7 @@ length_in
 
 `length_in`の少数を切り捨てたいとしましょう。Rでは、少数を切り捨てる関数は`round()`です。
 
-- Q7: `round()`を使って、`length_in`の少数を切り捨ててください。
+- Q8: `round()`を使って、`length_in`の少数を切り捨ててください。
 
 ```{r length-in-round-prep, include = FALSE, exercise.setup = "make-length-cm-solution"}
 length_in <- length_cm / 2.54
@@ -206,6 +252,106 @@ round(length_in)
 
 ```{r length-in-round-check}
 grade_this_code()
+```
+
+## パッケージについて
+
+Rには備え付けの関数がたくさんあり、この関数だけによるRの使い方を**「Base R」**（基本R）と呼ぶ。
+
+でも、やりたいことによってはBase Rでは足りない時もある。Base Rの機能を拡張するものを**「パッケージ」**（Package）と呼ぶ。パッケージとは、何かの共通テーマを持った関数のまとまりです。以下はパッケージの例です：
+
+- 図表を書く`ggplot2`
+- エクセルファイルを読み込む`readxl`
+- Rから電子メールを送る`gmailr`
+
+要するに、スマートフォンのアプリと同じようなものです。現在、Rには2万以上のパッケージがあり、情報処理に関することならほぼ何でもできる。
+
+### パッケージのインストール
+
+パッケージを使いたい場合、まずはそのパッケージをダウンロードする必要がある。
+
+パッケージを自分のパソコンにダウンロード（インストール）する関数は`install.packages()`です。`()`の中にパッケージ名（文字）を入れます。
+
+例えば、図表を書くパッケージ、`ggplot2`をインストールするコマンドは：
+
+```{r install-package-example, eval = FALSE}
+install.packages("ggplot2")
+```
+
+パッケージを一度インストールしたら、次にRを使う時は再度`install.packages()`をしなくていいです（すでにパソコンにダウンロードしてあるから）。
+
+- Q9: `praise`パッケージをインストールしてください（出力が出るまで数秒がかかるかもしれません）
+
+```{r praise-install, exercise = TRUE, exercise.lines = 2}
+
+```
+
+```{r praise-install-solution}
+install.packages("praise")
+```
+
+```{r praise-install-check}
+grade_this_code()
+```
+
+### パッケージのロード
+
+パッケージをインストール（ダウンロード）するのと、そのパッケージを使える状態にするのは、別のことです。
+
+パッケージを使える状態にする状態にする関数は`library()`です（自分のパソコンが図書館だとしたら、それぞれのパッケージが本になる、みたいなイメージです）。
+
+`install.packages()`と二つの大きな違いがあります：
+
+1.`install.packages()`は一個のパッケージについて一回だけすればいいですが、** `library()`はRを使う度に必要です**。
+1.`install.packages()`を使う時はパッケージ名を引用符で囲むが、** `library()`は引用符でパッケージ名を書かない**。
+
+例えば、
+
+```{r library-example, exercise = TRUE, exercise.lines = 2}
+library(stats)
+```
+
+`library()`を実行した後、Rは特に何かのメッセージを返さない。これはつまり、そのパッケージを使える状態に成功したという意味です（うまく行かなかったら、エラーが出る）。
+
+- Q10: `praise`パッケージをロードしてください。
+
+```{r praise-load, exercise = TRUE, exercise.lines = 2}
+
+```
+
+```{r praise-load-solution}
+library(praise)
+```
+
+```{r praise-load-check}
+grade_this_code()
+```
+
+- Q11. `praise()`関数を使ってみてください
+
+```{r praise-function, exercise = TRUE, exercise.lines = 2, exercise.setup = "praise-load-solution"}
+
+```
+
+```{r praise-function-solution}
+praise()
+```
+
+```{r praise-function-check}
+grade_this_code()
+```
+
+- Q12: `praise()`関数の出力はどんな型ですか？
+
+```{r praise-output-type, echo = FALSE}
+question("一つ選んでください：",
+  answer("論理", message = "論理ベクトルはTRUEかFALSE"),
+  answer("文字", correct = TRUE,),
+  answer("数字", message = "数字に引用符が付いていない"),
+  answer("句読点", message = "Rに「句読点」というデータ型が存在しない"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
 ```
 
 ## 確認と投稿
