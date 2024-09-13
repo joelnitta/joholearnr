@@ -205,7 +205,7 @@ c(1, 2, "apple", "banana")
 c(TRUE, FALSE, 1, 0)
 ```
 
-```{r object-name, echo=FALSE}
+```{r object-combine, echo=FALSE}
 question("一つ選んでください：",
   answer("論理", message = "論理ベクトルはTRUEかFALSE"),
   answer("文字", message = "文字ベクトルの要素は引用符が付いている"),
@@ -254,6 +254,106 @@ round(length_in)
 grade_this_code()
 ```
 
+### 引数の使い方
+
+関数の入力および他の設定を**「引数」**（argument）と言う。
+
+`round()`に入力する数字の引数の名前は`x`です：
+
+```{r arguments-1-example, exercise = TRUE, exercise.lines = 2}
+round(x = 3.33333)
+```
+
+そして、`round()`にはもう一つの引数があります：`digits`。`digits`は残す少数の数を設定する引数です：
+
+```{r arguments-2-example, exercise = TRUE, exercise.lines = 2}
+round(x = 3.33333, digits = 2)
+```
+
+複数の引数がある場合、コンマで区切ります。
+
+でも、今までは`x = なんちゃら`というふうに指定しなかったけど、ちゃんと切り捨てることができましたよね。なぜでしょう？
+
+Rでは、引数の位置も決まっています。
+
+1. `round()`の**１つ目**の引数は**切り捨てる数字**です
+2.  `round()`の**2つ目**の引数は**残す少数の数**です
+
+従って、Rでは引数名を指定しない場合、**位置で引数を感知する**。
+
+###
+
+- Q9: `round()`の引数名`x`と`digits`を使って、`length_in`の**少数を一つ残して**、切り捨ててください。
+
+```{r round-use-args-names, exercise = TRUE, exercise.lines = 2, exercise.setup = "length-in-round-prep"}
+
+```
+
+```{r round-use-args-names-solution}
+# order last ----
+round(x = length_in, digits = 1)
+
+# order first ----
+round(digits = 1, x = length_in)
+
+```
+
+```{r round-use-args-names-check}
+grade_this_code()
+```
+
+- Q10: **引数名を使わないで**、`length_in`の少数を一つ残して、`round()`で切り捨ててください。
+
+```{r round-no-args-names, exercise = TRUE, exercise.lines = 2, exercise.setup = "make-length-cm-solution"}
+
+```
+
+```{r round-no-args-names-solution}
+round(length_in, 1)
+```
+
+```{r round-no-args-names-check}
+grade_this_code()
+```
+
+###
+
+`seq()`は数字ベクトルを作る関数です。`seq()`の引数は以下のとおりです：
+
+- `from`: 始まる数
+- `to`: 終わる数
+- `by`: 連続する数字の間隔
+
+- Q11: `seq()`を使って、1から99まで（1と99を含めて）の奇数の数字ベクトルを作ってください
+
+```{r seq-args, exercise = TRUE, exercise.lines = 2}
+
+```
+
+```{r seq-args-check}
+grade_result(
+  pass_if(~ identical(.result, seq(from = 1, to = 99, by = 2)))
+)
+```
+
+### 関数を調べる
+
+Rには非常にたくさんの関数があります。どんなにRをマスターしても、全部を覚えることはまずないし、必要でもありません。
+
+ある関数についてその使い方（引数）を確認したい時は、`?関数名`、あるいは`help(関数名)`を実行する。
+
+- `toupper()`の関数の名前はどれでしょうか？`?`あるいは`help()`を使って、RStudioで確認してください。
+
+```{r argument-name, echo=FALSE}
+question("`toupper()`の関数の名前は...",
+  answer("word", message = "もう一度ヘルプファイルを読んでください"),
+  answer("x", correct = TRUE),
+  answer("y", message = "もう一度ヘルプファイルを読んでください"),
+  answer("character", message = "これは入力の種類です"),
+  allow_retry = TRUE
+)
+```
+
 ## パッケージについて
 
 Rには備え付けの関数がたくさんあり、この関数だけによるRの使い方を**「Base R」**（基本R）と呼ぶ。
@@ -280,7 +380,7 @@ install.packages("ggplot2")
 
 パッケージを一度インストールしたら、次にRを使う時は再度`install.packages()`をしなくていいです（すでにパソコンにダウンロードしてあるから）。
 
-- Q9: `praise`パッケージをインストールしてください（出力が出るまで数秒がかかるかもしれません）
+- Q12: `praise`パッケージをインストールしてください（出力が出るまで数秒がかかるかもしれません）
 
 ```{r praise-install, exercise = TRUE, exercise.lines = 2}
 
@@ -313,7 +413,7 @@ library(stats)
 
 `library()`を実行した後、Rは特に何かのメッセージを返さない。これはつまり、そのパッケージを使える状態に成功したという意味です（うまく行かなかったら、エラーが出る）。
 
-- Q10: `praise`パッケージをロードしてください。
+- Q13: `praise`パッケージをロードしてください。
 
 ```{r praise-load, exercise = TRUE, exercise.lines = 2}
 
@@ -327,7 +427,7 @@ library(praise)
 grade_this_code()
 ```
 
-- Q11. `praise()`関数を使ってみてください
+- Q14. `praise()`関数を使ってみてください
 
 ```{r praise-function, exercise = TRUE, exercise.lines = 2, exercise.setup = "praise-load-solution"}
 
@@ -341,7 +441,7 @@ praise()
 grade_this_code()
 ```
 
-- Q12: `praise()`関数の出力はどんな型ですか？
+- Q15: `praise()`関数の出力はどんな型ですか？
 
 ```{r praise-output-type, echo = FALSE}
 question("一つ選んでください：",
