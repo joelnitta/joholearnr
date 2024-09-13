@@ -468,6 +468,6 @@ learnrhash::encoder_logic()
 ```
 
 ```{r encode, echo=FALSE}
-moodle <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655&action=editsubmission"
+moodle <- "FIXME"
 learnrhash::encoder_ui(ui_before = learnrhash::default_ui(url = moodle))
 ```
