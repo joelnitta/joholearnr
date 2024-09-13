@@ -234,80 +234,11 @@ grade_this_code()
 
 ## 確認と投稿
 
-```{r context="server"}
-shiny::observeEvent(
-  input$check,
-  {
-    # Extract all questions in tutorial
- 
-    # IMPORTANT: Exclude any with "example" in chunk label
-    # (should not be included in grading)
-    tutorial_info <- learnr::get_tutorial_info()
-    questions <- tutorial_info$items[, c("order", "label", "type")] |>
-      dplyr::filter(!stringr::str_detect(label, "-example")) |>
-      dplyr::arrange("order")
-
-    questions <- questions |>
-      dplyr::mutate(order = seq_len(nrow(questions)))
-
-    # Extract state of exercises (correct or not)
-    # tutorial_state is list with one item per submitted exercise or question.
-    # If it hasn't been submitted yet, it won't appear in the list
-    tutorial_state <- learnr:::get_tutorial_state()
-
-    # Extract answers (correct or incorrect) as dataframe
-    if(length(tutorial_state) > 0) {
-      answers <-
-      tibble::tibble(
-        label = names(tutorial_state),
-        correct = purrr::map_chr(tutorial_state, "correct"),
-        timestamp = purrr::map_chr(tutorial_state, "timestamp")
-      )
-    } else {
-      answers <- tibble::tibble(
-        label = questions$label,
-        correct = NA_character_)
-    }
-
-    # Combine questions and answers into summary
-    summary <- dplyr::left_join(questions, answers, by = "label")
-
-    # Calculate current score
-    n_correct <- sum(as.logical(summary$correct), na.rm = TRUE)
-    n_total <- nrow(summary)
-    score <- round(n_correct / n_total, 1) * 100
-    score_text <- paste0(
-      "You have answered ",
-      n_correct,
-      "/",
-      n_total,
-      " questions correctly. ",
-      "Your score is ", score, "%."
-    )
-
-    # For debugging only
-    output$state = shiny::renderText(
-      paste(
-        capture.output(str(tutorial_info)),
-        collapse = "\n"
-      )
-    )
-    output$summary_table = shiny::renderTable(summary)
-    output$score_text = shiny::renderText(score_text)
-
-    invisible()
-  }
-)
-```
-
-```{r state, echo=FALSE}
-shiny::actionButton("check", "Check answers")
-shiny::br()
-shiny::br()
-shiny::textOutput("score_text")
-shiny::tableOutput("summary_table")
-# For debugging only
-# learnrhash:::wrapped_verbatim_text_output("state")
+```{r, echo=FALSE, results = "asis"}
+res <- knitr::knit_child(
+  system.file("rmd", "summarize_score.Rmd", package = "joholearnr"),
+  quiet = TRUE)
+cat(res, sep = '\n')
 ```
 
 ```{r context="server"}
