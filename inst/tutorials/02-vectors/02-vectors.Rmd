@@ -388,16 +388,34 @@ shiny::observeEvent(
     } else {
       answers <- tibble::tibble(
         label = questions$label,
-        correct = NA_character_)
+        correct = NA_character_,
+        timestamp = NA_character_)
     }
 
     # Combine questions and answers into summary
     summary <- dplyr::left_join(questions, answers, by = "label")
 
+    # Format for nice printing in app
+    summary_show <-
+      summary |>
+      dplyr::mutate(question = paste0("Q", order)) |>
+      dplyr::select(question, label, result = correct, time = timestamp) |>
+      dplyr::mutate(
+        result = as.character(result) |>
+          stringr::str_replace_all("TRUE", "✅") |>
+          stringr::str_replace_all("FALSE", "❌") |>
+          tidyr::replace_na(""),
+        time = dplyr::case_when(
+          result == "" ~ "",
+          is.na(time) ~ "",
+          .default = time
+        )
+      )
+
     # Calculate current score
     n_correct <- sum(as.logical(summary$correct), na.rm = TRUE)
     n_total <- nrow(summary)
-    score <- round(n_correct / n_total, 1) * 100
+    score <- round(n_correct / n_total, 3) * 100
     score_text <- paste0(
       "You have answered ",
       n_correct,
@@ -414,7 +432,7 @@ shiny::observeEvent(
         collapse = "\n"
       )
     )
-    output$summary_table = shiny::renderTable(summary)
+    output$summary_table = shiny::renderTable(summary_show)
     output$score_text = shiny::renderText(score_text)
 
     invisible()
