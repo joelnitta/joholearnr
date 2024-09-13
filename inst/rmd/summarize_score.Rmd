@@ -1,5 +1,25 @@
 <!-- Shiny logic and UI to check the results of the student-submitted answers -->
 
+```{r input-name-example, echo = FALSE}
+  question_text(
+    "名前を書いてください",
+    answer(NULL, correct = TRUE),
+    incorrect = NULL,
+    allow_retry = TRUE,
+    try_again_button = "編集する"
+  )
+```
+
+```{r input-id-example, echo = FALSE}
+  question_text(
+    "学籍番号を書いてください",
+    answer(NULL, correct = TRUE),
+    incorrect = NULL,
+    allow_retry = TRUE,
+    try_again_button = "編集する"
+  )
+```
+
 ```{r context="server"}
 shiny::observeEvent(
   input$check,
@@ -36,6 +56,15 @@ shiny::observeEvent(
       )
     }
 
+    # Extract name and student id
+    if (length(tutorial_state) > 0) {
+      student_name <- purrr::pluck(tutorial_state, "input-name-example", "answer")
+      student_id <- purrr::pluck(tutorial_state, "input-id-example", "answer")
+    } else {
+      student_name <- NULL
+      student_id <- NULL
+    }
+
     # Combine questions and answers into summary
     summary <- dplyr::left_join(questions, answers, by = "label")
 
@@ -55,6 +84,20 @@ shiny::observeEvent(
           .default = time
         )
       )
+    
+    # Format name feedback
+    if (!is.null(student_name)) {
+      student_name_text <- paste("Student name: ", student_name)
+    } else {
+      student_name_text <- "Student name: 名前を正しく入力してください"
+    }
+
+    # Format name feedback
+    if (!is.null(student_id)) {
+      student_id_text <- paste("Student ID: ", student_id)
+    } else {
+      student_id_text <- "Student ID: 学籍番号を正しく入力してください"
+    }
 
     # Calculate current score
     n_correct <- sum(as.logical(summary$correct), na.rm = TRUE)
@@ -66,29 +109,37 @@ shiny::observeEvent(
       "/",
       n_total,
       " questions correctly. ",
-      "Your score is ", score, "%."
+      "Your score is "
+      , score, "%."
     )
 
     # For debugging only
     output$state <- shiny::renderText(
       paste(
-        capture.output(str(tutorial_info)),
+        capture.output(str(tutorial_state)),
         collapse = "\n"
       )
     )
     output$summary_table <- shiny::renderTable(summary_show)
     output$score_text <- shiny::renderText(score_text)
-
+    output$student_name_text <- shiny::renderText(student_name_text)
+    output$student_id_text <- shiny::renderText(student_id_text)
     invisible()
   }
 )
 ```
 
+**投稿する前に必ず答えと名前および学籍番号を確認してください:**
+
 ```{r state, echo=FALSE}
-shiny::actionButton("check", "Check answers")
+shiny::actionButton("check", "投稿内容を確認する")
 shiny::br()
+shiny::textOutput("student_name_text")
+shiny::br()
+shiny::textOutput("student_id_text")
 shiny::br()
 shiny::textOutput("score_text")
+shiny::br()
 shiny::tableOutput("summary_table")
 # For debugging only
 # learnrhash:::wrapped_verbatim_text_output("state")
