@@ -13,6 +13,8 @@ library(gradethis)
 library(learnr)
 library(joholearnr)
 gradethis::gradethis_setup()
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655"
 ```
 
 ## Rを計算機として使う
@@ -239,13 +241,4 @@ res <- knitr::knit_child(
   system.file("rmd", "summarize_score.Rmd", package = "joholearnr"),
   quiet = TRUE)
 cat(res, sep = '\n')
-```
-
-```{r context="server"}
-learnrhash::encoder_logic()
-```
-
-```{r encode, echo=FALSE}
-moodle <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655&action=editsubmission"
-learnrhash::encoder_ui(ui_before = learnrhash::default_ui(url = moodle))
 ```

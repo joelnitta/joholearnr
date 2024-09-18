@@ -144,3 +144,13 @@ shiny::tableOutput("summary_table")
 # For debugging only
 # learnrhash:::wrapped_verbatim_text_output("state")
 ```
+
+
+```{r context="server"}
+learnrhash::encoder_logic()
+```
+
+```{r encode, echo = FALSE}
+# Make sure to set moodle_url in the parent Rmd setup chunk
+learnrhash::encoder_ui(ui_before = learnrhash::default_ui(url = moodle_url))
+```

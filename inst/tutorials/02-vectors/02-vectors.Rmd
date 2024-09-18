@@ -16,6 +16,8 @@ gradethis::gradethis_setup()
 # do this just to maintain dep on {praise} so it will be installed in the
 # shiny app
 invisible(praise::praise())
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1267594"
 ```
 
 ## ベクトルについて
@@ -461,13 +463,4 @@ res <- knitr::knit_child(
   system.file("rmd", "summarize_score.Rmd", package = "joholearnr"),
   quiet = TRUE)
 cat(res, sep = '\n')
-```
-
-```{r context="server"}
-learnrhash::encoder_logic()
-```
-
-```{r encode, echo=FALSE}
-moodle <- "FIXME"
-learnrhash::encoder_ui(ui_before = learnrhash::default_ui(url = moodle))
 ```

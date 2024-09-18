@@ -13,6 +13,8 @@ library(gradethis)
 library(learnr)
 library(joholearnr)
 gradethis::gradethis_setup()
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1267814"
 ```
 
 ## チュートリアルについて
@@ -81,17 +83,8 @@ cat(res, sep = '\n')
 
 これでは、答えはまだ提出出来ていない。
 
-答えを提出するには、Generate Hashボタンをクリックしてください。
+答えを提出するには、Generateボタンをクリックしてください。
 
-そうすると、とても長い文字列が下のボックスに現れる。この文字列には、あなたが答えた内容が全部入っている。この文字列をコピして、Moodleの課題で提出してください。
+そうすると、とても長い文字列が上のボックスに現れる。この文字列には、あなたが答えた内容が全部入っている。この文字列をコピして、Moodleの課題で提出してください。
 
 そうしたら、完了です。
-
-```{r context="server"}
-learnrhash::encoder_logic()
-```
-
-```{r encode, echo=FALSE}
-moodle <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655&action=editsubmission"
-learnrhash::encoder_ui(ui_before = learnrhash::default_ui(url = moodle))
-```
