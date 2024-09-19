@@ -95,7 +95,7 @@ write_all_tutorials <- function(dir = ".", delete_html = TRUE) {
 #'   fs::dir_delete(temp_tutorials_folder)
 #' }
 #' @export
-snapshot_tutorials <- function(dir = "./tutorials") {
+snapshot_tutorials <- function(dir = "./inst/tutorials") {
   tutorial_dirs <- fs::dir_ls(dir)
   lapply(
     tutorial_dirs,
