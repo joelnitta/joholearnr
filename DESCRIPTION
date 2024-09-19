@@ -11,7 +11,7 @@ Description: Provides {learnr} tutorials as homework assignments for the Joho-sh
 License: CC BY 4.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Suggests: 
     gradethis (>= 0.2.14),
     learnr,
@@ -28,4 +28,6 @@ Depends:
 LazyData: true
 Imports: 
     assertthat,
-    fs
+    fs,
+    renv,
+    withr

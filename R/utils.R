@@ -78,3 +78,28 @@ write_all_tutorials <- function(dir = ".", delete_html = TRUE) {
   }
   invisible()
 }
+
+#' Snapshot all tutorial files
+#'
+#' Create an renv.lock file for each tutorial
+#'
+#' @param dir Directory containing the tutorials. Each should be in its own
+#' subdirectory; see `system.file("tutorials", package = "joholearnr")`
+#' @return Nothing. Externally, the renv files will be written to disk.
+#' @examples
+#' if (interactive()) {
+#'   tutorials_folder <- system.file("tutorials", package = "joholearnr")
+#'   temp_tutorials_folder <- fs::path(tempdir(), "tutorials")
+#'   fs::dir_copy(tutorials_folder, temp_tutorials_folder, overwrite = TRUE)
+#'   snapshot_tutorials(temp_tutorials_folder)
+#'   fs::dir_delete(temp_tutorials_folder)
+#' }
+#' @export
+snapshot_tutorials <- function(dir = "./tutorials") {
+  tutorial_dirs <- fs::dir_ls(dir)
+  lapply(
+    tutorial_dirs,
+    function(x) withr::with_dir(x, renv::snapshot())
+  )
+  invisible()
+}
