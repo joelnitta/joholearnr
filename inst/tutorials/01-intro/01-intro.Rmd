@@ -12,6 +12,8 @@ runtime: shiny_prerendered
 library(gradethis)
 library(learnr)
 library(joholearnr)
+library(learnrhash)
+
 gradethis::gradethis_setup()
 
 moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655"

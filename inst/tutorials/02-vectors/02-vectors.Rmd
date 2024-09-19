@@ -12,6 +12,8 @@ runtime: shiny_prerendered
 library(gradethis)
 library(learnr)
 library(joholearnr)
+library(learnrhash)
+
 gradethis::gradethis_setup()
 # do this just to maintain dep on {praise} so it will be installed in the
 # shiny app
