@@ -414,7 +414,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "joholearnr",
       "RemoteUsername": "joelnitta",
-      "RemoteSha": "f7971c9331cac39e2a2a4e69ae60d8048797ae85",
+      "RemoteSha": "7bc133fe77653ef161391bd0105a5ff400a42fb9",
       "Requirements": [
         "R",
         "assertthat",
@@ -422,7 +422,7 @@
         "renv",
         "withr"
       ],
-      "Hash": "7bb721df0aed38d5a04b536ef8c48184"
+      "Hash": "60023fe29a4e14b039542cc3b9a8137d"
     },
     "jquerylib": {
       "Package": "jquerylib",
