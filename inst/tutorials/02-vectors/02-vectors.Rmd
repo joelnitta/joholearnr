@@ -20,6 +20,9 @@ invisible(praise::praise())
 
 tutorial_options(exercise.reveal_solution = FALSE)
 
+# Need for successfull installing of {praise} in Q13
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1267594"
 ```
 
@@ -386,7 +389,7 @@ install.packages("ggplot2")
 
 パッケージを一度インストールしたら、次にRを使う時は再度`install.packages()`をしなくていいです（すでにパソコンにダウンロードしてあるから）。
 
-- Q13: `praise`パッケージをインストールしてください（出力が出るまで少し時間がかかるかもしれません）
+- Q13: `praise`パッケージをインストールしてください（出力が出るまで少し時間がかかるかもしれません、注意「Warning」が出ても気にしなくて大丈夫です）
 
 ```{r praise-install, exercise = TRUE, exercise.lines = 2}
 
