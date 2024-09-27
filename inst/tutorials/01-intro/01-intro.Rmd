@@ -89,11 +89,11 @@ grade_result(
 ```
 
 ```{r order-op-solution}
-# 演算の順序を確認
-(5 - 2) * 8
+# parentheses first ----
+(5-2)*8
 
-# 演算の順序を変更
-8 * (5 - 2)
+# parentheses last ----
+8*(5-2)
 ```
 
 ```{r order-op-check}
