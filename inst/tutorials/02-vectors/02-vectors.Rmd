@@ -350,7 +350,11 @@ Rには非常にたくさんの関数があります。どんなにRをマスタ
 
 ある関数についてその使い方（引数）を確認したいときは、`?関数名`、あるいは`help(関数名)`を実行します。
 
-- Q12: `toupper()`の引数の名前はどれでしょうか？ `?` あるいは`help()`を使って、RStudioで確認してください。
+- Q12: `toupper()`の引数の名前はどれでしょうか？ `?` あるいは`help()`を使って、RStudioあるいは下のコンソールで確認してください。
+
+```{r help-example, exercise = TRUE, exercise.lines = 2}
+help(____)
+```
 
 ```{r argument-name, echo=FALSE}
 question("一つ選んでください：",
