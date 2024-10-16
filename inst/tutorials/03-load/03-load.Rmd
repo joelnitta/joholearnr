@@ -1,0 +1,123 @@
+---
+title: "データの読み込み"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(gradethis)
+library(learnr)
+library(joholearnr)
+library(learnrhash)
+suppressPackageStartupMessages(library(tidyverse))
+
+gradethis::gradethis_setup()
+
+tutorial_options(exercise.reveal_solution = FALSE)
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655"
+```
+
+## データをファイルから読み込む
+
+### 準備
+
+本授業では`tidyverse`パッケージ群に入っているデータ読み込み関数を使うため、まずは`tidyverse`をロードしましょう（チュートリアルではRStudio と違って、パッケージが立ち上がった時のメッセージは表示されませんが、「Run Code」を押してからエラーが表示されない場合は正しくロードできたことになっています）。
+
+```{r tidyverse-example, exercise = TRUE, exercise.lines = 2}
+library(tidyverse)
+```
+
+### 練習ファイルのパス
+
+`tidyverse`には練習用のデータが入っています。練習用データの場所（パス）を表示するために、`readr_example()`関数を使います。例えば、
+
+```{r readr-path-example, exercise = TRUE, exercise.lines = 2}
+readr_example("challenge.csv")
+```
+
+- Q1: `readr_example()`を使って、`chickens.csv`のパスを表示してください。
+
+```{r readr-path, exercise = TRUE, exercise.lines = 2}
+
+```
+
+```{r readr-path-solution}
+readr_example("chickens.csv")
+```
+
+```{r readr-path-check}
+grade_this_code()
+```
+
+### データの読み込み
+
+`.csv`ファイルを読み込むために`read_csv()`関数を使います。`read_csv()`の最初の引数`file`は`.csv`ファイルのパスです。
+
+- Q2: `read_csv()`と`readr_example()`を使って、`chickens.csv`を読み込んで、`chickens`というオブジェクトとして保存してください。最後に`chickens`の中身を表示してください。
+
+```{r chickens, exercise = TRUE, exercise.lines = 6}
+# データを読み込んで、保存する
+chickens <- _____
+
+# 保存したデータの中身を確認する
+____
+```
+
+```{r chickens-check}
+chickens_df <- readr::read_csv(readr::readr_example("chickens.csv"))
+grade_this({
+  fail_if_not_equal(
+    x = stringr::str_extract(
+      # get last word of the user code; should be `chickens`
+      unlist(.user_code) |> paste(collapse = " "), "\\b\\w+$"),
+    y = "chickens",
+    message = "最後に chickens でデータの中身を表示する必要があります"
+  )
+  pass_if_equal(
+    x = as.data.frame(.result),
+    y = as.data.frame(chickens_df)
+  )
+  fail()
+})
+```
+
+- Q3: `chickens`にはいくつの行が入っている？
+
+```{r chickens-rows, echo=FALSE}
+question("一つを選んでください：",
+  answer("4", message = "これは列の数です"),
+  answer("2",),
+  answer("5", correct = TRUE),
+  answer("10",),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+- Q4: `chickens`にはいくつの列が入っている？
+
+```{r chickens-cols, echo=FALSE}
+question("一つを選んでください：",
+  answer("5", message = "これは行の数です"),
+  answer("2",),
+  answer("4", correct = TRUE),
+  answer("10",),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+## データをURLから読み込む
+
+## 確認と投稿
+
+```{r, echo=FALSE, results = "asis"}
+res <- knitr::knit_child(
+  system.file("rmd", "summarize_score.Rmd", package = "joholearnr"),
+  quiet = TRUE)
+cat(res, sep = '\n')
+```
