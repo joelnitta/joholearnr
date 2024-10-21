@@ -37,7 +37,7 @@ last_user_code_call <- function(.user_code) {
 
 ### 準備
 
-本授業では`tidyverse`パッケージ群に入っているデータ読み込み関数を使うため、まずは`tidyverse`をロードしましょう（チュートリアルではRStudio と違って、パッケージが立ち上がった時のメッセージは表示されませんが、「Run Code」を押してからエラーが表示されない場合は正しくロードできたことになっています）。
+本授業では`tidyverse`パッケージ群に含まれているデータ読み込み関数を使用するため、まずは`tidyverse`をロードしましょう（チュートリアルではRStudioと違って、パッケージが立ち上がった時のメッセージは表示されませんが、「Run Code」を押してエラーが表示されなければ、正しくロードされています）。
 
 ```{r tidyverse-example, exercise = TRUE, exercise.lines = 2}
 library(tidyverse)
@@ -45,7 +45,7 @@ library(tidyverse)
 
 ### 練習ファイルのパス
 
-`tidyverse`には練習用のデータが入っています。練習用データの場所（パス）を表示するために、`readr_example()`関数を使います。例えば、
+`tidyverse`には練習用のデータが含まれています。練習用データの場所（パス）を表示するために、`readr_example()`関数を使います。例えば、
 
 ```{r readr-path-example, exercise = TRUE, exercise.lines = 2}
 readr_example("challenge.csv")
@@ -83,7 +83,7 @@ question("一つを選んでください：",
 
 `.csv`ファイルを読み込むために`read_csv()`関数を使います。`read_csv()`の最初の引数`file`は`.csv`ファイルのパスです。
 
-- Q3: `read_csv()`と`readr_example()`を使って、`chickens.csv`を読み込んで、`chickens`というオブジェクトとして保存してください。最後に`chickens`の中身を表示してください。
+- Q3: `read_csv()`と`readr_example()`を使って、`chickens.csv`を読み込み、`chickens`というオブジェクトとして保存してください。最後に`chickens`の中身を表示してください。
 
 ```{r chickens, exercise = TRUE, exercise.lines = 6}
 # データを読み込んで、保存する
@@ -109,20 +109,20 @@ grade_this({
 })
 ```
 
-- Q4: `chickens`にはいくつの行が入っている？
+- Q4: `chickens`にはいくつの行が入っていますか？
 
 ```{r chickens-rows, echo=FALSE}
 question("一つを選んでください：",
   answer("4", message = "これは列の数です"),
-  answer("2",),
+  answer("2"),
   answer("5", correct = TRUE),
-  answer("10",),
+  answer("10"),
   random_answer_order = TRUE,
   allow_retry = TRUE
 )
 ```
 
-- Q5: `chickens`にはいくつの列が入っている？
+- Q5: `chickens`にはいくつの列が入っていますか？
 
 ```{r chickens-cols, echo=FALSE}
 question("一つを選んでください：",
@@ -150,9 +150,9 @@ question("一つを選んでください：",
 
 ## データをURLから読み込む
 
-URLからでもファイルを読み込むことが出来ます。ファイルのパスの代わりにURLを使います。
+URLからでもファイルを読み込むことができます。ファイルのパスの代わりにURLを使用します。
 
-- Q7:  <https://pos.it/r4ds-01-sales>というURLからCSVファイルを読み込んで、`sales`と言うデータフレームに保存してください。最後の行に`sales`を打つことによってその中身を確認してください。
+- Q7:  <https://pos.it/r4ds-01-sales>というURLからCSVファイルを読み込み、`sales`というデータフレームに保存してください。最後の行に`sales`と打ってその中身を確認してください。
 
 ```{r read-csv-url, exercise = TRUE, exercise.lines = 3}
 
@@ -188,7 +188,7 @@ question("一つを選んでください：",
 )
 ```
 
-- Q9: `sales`にはいくつの行が入っている？
+- Q9: `sales`にはいくつの行が入っていますか？
 
 ```{r sales-rows, echo=FALSE}
 question("一つを選んでください：",
@@ -201,7 +201,7 @@ question("一つを選んでください：",
 )
 ```
 
-- Q10: `sales`にはいくつの列が入っている？
+- Q10: `sales`にはいくつの列が入っていますか？
 
 ```{r sales-cols, echo=FALSE}
 question("一つを選んでください：",
@@ -216,7 +216,7 @@ question("一つを選んでください：",
 
 ## Rの作業ディレクトリ
 
-- Q11: 現在のRの作業ディレクトリをRの関数で確認してください。
+- Q11: 現在のRの作業ディレクトリをRの関数で確認してください。  
   - ヒント：関数名は"get working directory"の略です。
 
 ```{r r-wd, exercise = TRUE, exercise.lines = 2}
