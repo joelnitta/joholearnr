@@ -18,7 +18,19 @@ gradethis::gradethis_setup()
 
 tutorial_options(exercise.reveal_solution = FALSE)
 
-moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655"
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1291956"
+
+# Function to get last call in user code, excluding comments
+last_user_code_call <- function(.user_code) {
+  unlist(.user_code) |>
+    paste(collapse = " ") |>
+    stringr::str_split("\\n") |>
+    magrittr::extract2(1) |>
+    dplyr::last() |>
+    # Exclude any comments after code
+    stringr::str_remove_all("#.*$") |>
+    stringr::str_squish()
+}
 ```
 
 ## データをファイルから読み込む
@@ -53,11 +65,25 @@ readr_example("chickens.csv")
 grade_this_code()
 ```
 
+- Q2: `chickens.csv`が入っているフォルダーの名前は何でしょうか？
+
+```{r chickens-path, echo=FALSE}
+question("一つを選んでください：",
+  answer("Desktop"),
+  answer("Library"),
+  answer("Z:"),
+  answer("extdata", correct = TRUE),
+  answer("readr"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
 ### データの読み込み
 
 `.csv`ファイルを読み込むために`read_csv()`関数を使います。`read_csv()`の最初の引数`file`は`.csv`ファイルのパスです。
 
-- Q2: `read_csv()`と`readr_example()`を使って、`chickens.csv`を読み込んで、`chickens`というオブジェクトとして保存してください。最後に`chickens`の中身を表示してください。
+- Q3: `read_csv()`と`readr_example()`を使って、`chickens.csv`を読み込んで、`chickens`というオブジェクトとして保存してください。最後に`chickens`の中身を表示してください。
 
 ```{r chickens, exercise = TRUE, exercise.lines = 6}
 # データを読み込んで、保存する
@@ -71,9 +97,7 @@ ____
 chickens_df <- readr::read_csv(readr::readr_example("chickens.csv"))
 grade_this({
   fail_if_not_equal(
-    x = stringr::str_extract(
-      # get last word of the user code; should be `chickens`
-      unlist(.user_code) |> paste(collapse = " "), "\\b\\w+$"),
+    x = last_user_code_call(.user_code),
     y = "chickens",
     message = "最後に chickens でデータの中身を表示する必要があります"
   )
@@ -85,7 +109,7 @@ grade_this({
 })
 ```
 
-- Q3: `chickens`にはいくつの行が入っている？
+- Q4: `chickens`にはいくつの行が入っている？
 
 ```{r chickens-rows, echo=FALSE}
 question("一つを選んでください：",
@@ -98,20 +122,114 @@ question("一つを選んでください：",
 )
 ```
 
-- Q4: `chickens`にはいくつの列が入っている？
+- Q5: `chickens`にはいくつの列が入っている？
 
 ```{r chickens-cols, echo=FALSE}
 question("一つを選んでください：",
   answer("5", message = "これは行の数です"),
-  answer("2",),
+  answer("2"),
   answer("4", correct = TRUE),
-  answer("10",),
+  answer("10"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+- Q6: `chickens`の列のうち、数字データはどれでしょうか？
+
+```{r chickens-cols-question, echo=FALSE}
+question("一つを選んでください：",
+  answer("chicken"),
+  answer("sex"),
+  answer("eggs_laid", correct = TRUE),
+  answer("motto"),
   random_answer_order = TRUE,
   allow_retry = TRUE
 )
 ```
 
 ## データをURLから読み込む
+
+URLからでもファイルを読み込むことが出来ます。ファイルのパスの代わりにURLを使います。
+
+- Q7:  <https://pos.it/r4ds-01-sales>というURLからCSVファイルを読み込んで、`sales`と言うデータフレームに保存してください。最後の行に`sales`を打つことによってその中身を確認してください。
+
+```{r read-csv-url, exercise = TRUE, exercise.lines = 3}
+
+```
+
+```{r read-csv-url-check}
+sales_df <- readr::read_csv("https://pos.it/r4ds-01-sales")
+grade_this({
+  fail_if_not_equal(
+    x = last_user_code_call(.user_code),
+    y = "sales",
+    message = "最後に sales でデータの中身を表示する必要があります"
+  )
+  pass_if_equal(
+    x = as.data.frame(.result),
+    y = as.data.frame(sales_df)
+  )
+  fail()
+})
+```
+
+- Q8: `sales`の列のうち、文字データはどれでしょうか？
+
+```{r sales-cols-question, echo=FALSE}
+question("一つを選んでください：",
+  answer("month", correct = TRUE),
+  answer("year"),
+  answer("brand"),
+  answer("item"),
+  answer("n"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+- Q9: `sales`にはいくつの行が入っている？
+
+```{r sales-rows, echo=FALSE}
+question("一つを選んでください：",
+  answer("5", message = "これは列の数です"),
+  answer("11"),
+  answer("7", correct = TRUE),
+  answer("4"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+- Q10: `sales`にはいくつの列が入っている？
+
+```{r sales-cols, echo=FALSE}
+question("一つを選んでください：",
+  answer("7", message = "これは行の数です"),
+  answer("3"),
+  answer("5", correct = TRUE),
+  answer("9"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+## Rの作業ディレクトリ
+
+- Q11: 現在のRの作業ディレクトリをRの関数で確認してください。
+  - ヒント：関数名は"get working directory"の略です。
+
+```{r r-wd, exercise = TRUE, exercise.lines = 2}
+
+```
+
+```{r r-wd-solution}
+getwd()
+```
+
+```{r r-wd-check}
+grade_this_code()
+```
 
 ## 確認と投稿
 
