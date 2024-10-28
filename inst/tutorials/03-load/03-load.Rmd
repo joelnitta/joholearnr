@@ -19,18 +19,6 @@ gradethis::gradethis_setup()
 tutorial_options(exercise.reveal_solution = FALSE)
 
 moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1291956"
-
-# Function to get last call in user code, excluding comments
-last_user_code_call <- function(.user_code) {
-  unlist(.user_code) |>
-    paste(collapse = " ") |>
-    stringr::str_split("\\n") |>
-    magrittr::extract2(1) |>
-    dplyr::last() |>
-    # Exclude any comments after code
-    stringr::str_remove_all("#.*$") |>
-    stringr::str_squish()
-}
 ```
 
 ## データをファイルから読み込む

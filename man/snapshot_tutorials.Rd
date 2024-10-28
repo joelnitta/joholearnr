@@ -4,7 +4,7 @@
 \alias{snapshot_tutorials}
 \title{Snapshot all tutorial files}
 \usage{
-snapshot_tutorials(dir = "./tutorials")
+snapshot_tutorials(dir = "./inst/tutorials")
 }
 \arguments{
 \item{dir}{Directory containing the tutorials. Each should be in its own

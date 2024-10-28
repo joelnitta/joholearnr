@@ -1,0 +1,1 @@
+# データを読み込んで、保存する\nchickens <- read_csv(readr_example("chickens.csv"))\n# 保存したデータの中身を確認する\nchickens # hello

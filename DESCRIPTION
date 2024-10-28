@@ -19,7 +19,8 @@ Suggests:
     learnrhash (>= 0.2.0),
     shiny,
     stringr,
-    tibble
+    tibble,
+    testthat (>= 3.0.0)
 Remotes: 
     rstudio/gradethis,
     rundel/learnrhash
@@ -31,3 +32,4 @@ Imports:
     fs,
     renv,
     withr
+Config/testthat/edition: 3
