@@ -23,11 +23,11 @@ moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=129387
 
 ## 準備
 
-必要なパッケージをロードしてから、今回の宿題に使うデータを読み込みましょう。
+必要なパッケージをロードしてから、今回の課題に使うデータを読み込みましょう。
 
-今回のデータはURLから読み込みます。世界各国の経済的なデータを含む、「gapminder」というデータセットです。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/>を参照してください。
+今回のデータはURLから読み込みます。世界各国の経済データを含む「gapminder」というデータセットです。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/> を参照してください。
 
-まずは生データを読み込むので、`gapminder_raw`として保存します。
+まずは生データを読み込み、`gapminder_raw`として保存します。
 
 ```{r tidyverse-example, exercise = TRUE, exercise.lines = 6}
 library(tidyverse)
@@ -46,14 +46,13 @@ gapminder_raw
 - `pop`: 人口
 - `continent`: 大陸
 - `lifeExp`: 寿命（"Life Expectancy"）
-- `gdpPercap`: 一人当たりの国内 （"GDP per capita"）
+- `gdpPercap`: 一人当たりの国内総生産（"GDP per capita"）
 
 ## 列名を変更する
 
-`gapminder_raw`には大文字と小文字が混じっている列名があります:`lifeExp`と`gdpPercap`。
+`gapminder_raw`には、大文字と小文字が混ざっている列名があります：`lifeExp`と`gdpPercap`。
 
-- Q1: `rename()`あるいは`clean_names()`関数を使って、この列名を`life_exp`と`gdp_percap`というふうに変えてください（`clean_names()`を使う場合は`janitor`パッケージをロードする必要があります）。`gapminder`というオブジェクトとして保存して、最後に`gapminder`の中身を表示してください。
-
+- Q1: `rename()`または`clean_names()`関数を使って、この列名を`life_exp`と`gdp_percap`というふうに変更してください（`clean_names()`を使う場合は`janitor`パッケージをロードする必要があります）。`gapminder`というオブジェクトとして保存し、最後に`gapminder`の中身を表示してください。
 
 ```{r load-data-hide, echo = FALSE}
 gapminder_raw <- read_csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/gapminder_data.csv")
@@ -88,18 +87,18 @@ grade_this({
 
 ### データの説明
 
-`gapminder`の列名を変更した結果、データがこうなりました：
+列名を変更した結果、`gapminder`の列は次のようになります：
 
 - `country`: 国
 - `year`: 年
 - `pop`: 人口
 - `continent`: 大陸
 - `life_exp`: 寿命（"Life Expectancy"）
-- `gdp_percap`: 一人当たりの国内総生産 （"GDP per capita"）
+- `gdp_percap`: 一人当たりの国内総生産（"GDP per capita"）
 
 ## データを絞る
 
-- Q2: `filter()`関数を使って、`gapminder`のデータから日本（"Japan"）のデータだけを抜き出してください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+- Q2: `filter()`関数を使って、`gapminder`から日本（"Japan"）のデータのみを抽出してください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
 
 ```{r filter-japan, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____)
@@ -120,13 +119,13 @@ filter(____, ____)
   })
 ```
 
-`filter()`は条件を`,`で分けることによって複数の条件でも絞ることができます。例えば、1997年に絞って、人あり当たりの国内総生産が3万米ドルより多い国に絞ります：
+`filter()`では、複数の条件を`,`で区切ることで複数条件で絞り込みが可能です。たとえば、1997年に絞り、人あたりのGDPが3万米ドルを超える国を抽出します。
 
 ```{r filter-mult-example, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
 filter(gapminder, year == 1997, gdp_percap > 30000)
 ```
 
-- Q3: 2007年にアジア大陸の国で寿命が65歳より低い（65歳を含まない）国だけに絞ってください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+- Q3: 2007年に、アジア大陸で寿命が65歳未満（65歳を含まない）の国だけに絞ってください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
 
 ```{r filter-asia-life, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____, ____, ____)
@@ -149,9 +148,9 @@ filter(____, ____, ____, ____)
 
 ## データを変更する
 
-### 既に存在している列を変更する
+### 既存の列を変更する
 
-- Q4: `mutate()`関数を使用して、`pop`を万人単位に変えてください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+- Q4: `mutate()`関数を使用して、`pop`を万人単位に変換してください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
 
 ```{r mutate-pop, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 mutate(____, ____)
@@ -174,9 +173,9 @@ mutate(____, ____)
 
 ### 新しい列を作成する
 
-`mutate(列名 = 新しい列を作るコマンド)`というふうに使いますが、`列名`が既に存在している列ではない場合、新しい列が作成されます。
+`mutate(列名 = 新しい列を作成する計算式)`の形で使いますが、指定した`列名`が存在しない場合は、新しい列が作成されます。
 
-例えば、寿命の相対的な値を「`life_exp_rel`」として計算しましょう：
+たとえば、寿命の相対値を`life_exp_rel`として計算します。
 
 ```{r mutate-new-example, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
 mutate(gapminder, life_exp_rel = life_exp / max(life_exp))
@@ -209,14 +208,14 @@ mutate(____, ____)
 
 ## パイプ
 
-`|>`（「パイプ」）は左側のものを右側へ渡す記号です。
+`|>`（パイプ）は、左側のオブジェクトを右側の関数に渡すための記号です。
 
-例えば、授業ではこのように勉強しました：
+例えば、授業では[このように勉強しました](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%91%E3%82%A4%E3%83%97%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9)：
 
 > - `arrange(データ, 列名)`というような書き方をしてきましたが、パイプを使うとこのように書きます：
   - `データ |> arrange(列名)`
 
-- Q6: パイプを使って、Q4をもう一度行ってください（`pop`を万人単位に変えてください）
+- Q6: パイプを使って、Q4の`pop`を万人単位に変換する操作をもう一度行ってください。
 
 ```{r mutate-pop-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 ____ |> mutate(____)
@@ -242,7 +241,7 @@ ____ |> mutate(____)
   })
 ```
 
-- Q7: パイプを使って、Q3をもう一度行ってください（2007年にアジア大陸の国で寿命が65歳より低い国だけに絞る）
+- Q7: パイプを使って、Q3の操作（2007年にアジア大陸で寿命が65歳未満の国のデータを抽出）をもう一度行ってください。
 
 ```{r filter-asia-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 ____ |> filter(____)
@@ -270,10 +269,10 @@ ____ |> filter(____)
 
 ## パイプライン
 
-複数の作業をパイプで組み合わせることを「パイプライン」と言います。
+複数の操作をパイプでつなげて一連の作業を行うことを「パイプライン」と呼びます。
 
-- Q8: 以下のパイプラインを組んでください。
-  - `gapminder`から始めて、1997年のヨーロッパ（「Europe」）のデータだけに絞って、人口を万人単位に変えて、人口の小さい順から並び替えてください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+- Q8: 次のパイプラインを組んでください。
+  - `gapminder`から始め、1997年のヨーロッパ（"Europe"）のデータを抽出し、人口を万人単位に変換して、人口の小さい順に並べてください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
 
 ```{r europe-pipeline, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
 ____ |>
@@ -339,7 +338,7 @@ question_text(
 )
 ```
 
-## 確認と投稿
+## 確認と提出
 
 ```{r, echo=FALSE, results = "asis"}
 res <- knitr::knit_child(
