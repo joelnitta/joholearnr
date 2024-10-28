@@ -1,0 +1,349 @@
+---
+title: "データの整理（1）"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(gradethis)
+library(learnr)
+library(joholearnr)
+library(learnrhash)
+suppressPackageStartupMessages(library(tidyverse))
+
+gradethis::gradethis_setup()
+
+tutorial_options(exercise.reveal_solution = FALSE)
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1293876"
+```
+
+## 準備
+
+必要なパッケージをロードしてから、今回の宿題に使うデータを読み込みましょう。
+
+今回のデータはURLから読み込みます。世界各国の経済的なデータを含む、「gapminder」というデータセットです。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/>を参照してください。
+
+まずは生データを読み込むので、`gapminder_raw`として保存します。
+
+```{r tidyverse-example, exercise = TRUE, exercise.lines = 6}
+library(tidyverse)
+
+gapminder_raw <- read_csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/gapminder_data.csv")
+
+gapminder_raw
+```
+
+### データの説明
+
+`gapminder_raw`には以下の列があります：
+
+- `country`: 国
+- `year`: 年
+- `pop`: 人口
+- `continent`: 大陸
+- `lifeExp`: 寿命（"Life Expectancy"）
+- `gdpPercap`: 一人当たりの国内 （"GDP per capita"）
+
+## 列名を変更する
+
+`gapminder_raw`には大文字と小文字が混じっている列名があります:`lifeExp`と`gdpPercap`。
+
+- Q1: `rename()`あるいは`clean_names()`関数を使って、この列名を`life_exp`と`gdp_percap`というふうに変えてください（`clean_names()`を使う場合は`janitor`パッケージをロードする必要があります）。`gapminder`というオブジェクトとして保存して、最後に`gapminder`の中身を表示してください。
+
+
+```{r load-data-hide, echo = FALSE}
+gapminder_raw <- read_csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/gapminder_data.csv")
+```
+
+```{r rename-gapminder, exercise = TRUE, exercise.lines = 7, exercise.setup = "load-data-hide"}
+# 列名を変更する
+gapminder <- _____
+
+# 保存したデータの中身を確認する
+____
+```
+
+```{r clean-gapminder, echo = FALSE, exercise.setup = "load-data-hide"}
+gapminder <- janitor::clean_names(gapminder_raw)
+```
+
+```{r rename-gapminder-check}
+grade_this({
+  fail_if_not_equal(
+    x = last_user_code_call(.user_code),
+    y = "gapminder",
+    message = "最後に gapminder でデータの中身を表示する必要があります"
+  )
+  pass_if_equal(
+    x = as.data.frame(.result),
+    y = as.data.frame(gapminder)
+  )
+  fail()
+})
+```
+
+### データの説明
+
+`gapminder`の列名を変更した結果、データがこうなりました：
+
+- `country`: 国
+- `year`: 年
+- `pop`: 人口
+- `continent`: 大陸
+- `life_exp`: 寿命（"Life Expectancy"）
+- `gdp_percap`: 一人当たりの国内総生産 （"GDP per capita"）
+
+## データを絞る
+
+- Q2: `filter()`関数を使って、`gapminder`のデータから日本（"Japan"）のデータだけを抜き出してください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+
+```{r filter-japan, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+filter(____, ____)
+```
+
+```{r filter-japan-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(filter(gapminder, country == "Japan"))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+`filter()`は条件を`,`で分けることによって複数の条件でも絞ることができます。例えば、1997年に絞って、人あり当たりの国内総生産が3万米ドルより多い国に絞ります：
+
+```{r filter-mult-example, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
+filter(gapminder, year == 1997, gdp_percap > 30000)
+```
+
+- Q3: 2007年にアジア大陸の国で寿命が65歳より低い（65歳を含まない）国だけに絞ってください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+
+```{r filter-asia-life, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+filter(____, ____, ____, ____)
+```
+
+```{r filter-asia-life-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(filter(gapminder, continent == "Asia", life_exp < 65, year == 2007))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+## データを変更する
+
+### 既に存在している列を変更する
+
+- Q4: `mutate()`関数を使用して、`pop`を万人単位に変えてください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+
+```{r mutate-pop, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+mutate(____, ____)
+```
+
+```{r mutate-pop-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(mutate(gapminder, pop = pop/10000))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+### 新しい列を作成する
+
+`mutate(列名 = 新しい列を作るコマンド)`というふうに使いますが、`列名`が既に存在している列ではない場合、新しい列が作成されます。
+
+例えば、寿命の相対的な値を「`life_exp_rel`」として計算しましょう：
+
+```{r mutate-new-example, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
+mutate(gapminder, life_exp_rel = life_exp / max(life_exp))
+```
+
+- `max(life_exp)`は寿命のもっとも大きな値です。つまり、すべての寿命のデータをもっとも大きな寿命で割ることによって、相対的な値を作りました。
+
+###
+
+Q5: 一人当たりの国内総生産（`gdp_percap`）を人口（`pop`）にかけることによって、国内総生産（`gdp`）を計算してください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+
+```{r mutate-gdp, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+mutate(____, ____)
+```
+
+```{r mutate-gdp-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(mutate(gapminder, gdp = gdp_percap * pop))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+## パイプ
+
+`|>`（「パイプ」）は左側のものを右側へ渡す記号です。
+
+例えば、授業ではこのように勉強しました：
+
+> - `arrange(データ, 列名)`というような書き方をしてきましたが、パイプを使うとこのように書きます：
+  - `データ |> arrange(列名)`
+
+- Q6: パイプを使って、Q4をもう一度行ってください（`pop`を万人単位に変えてください）
+
+```{r mutate-pop-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+____ |> mutate(____)
+```
+
+```{r mutate-pop-pipe-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(mutate(gapminder, pop = pop/10000))
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%.*mutate\\("),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+- Q7: パイプを使って、Q3をもう一度行ってください（2007年にアジア大陸の国で寿命が65歳より低い国だけに絞る）
+
+```{r filter-asia-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+____ |> filter(____)
+```
+
+```{r filter-asia-pipe-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(filter(gapminder, continent == "Asia", life_exp < 65, year == 2007))
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%.*filter\\("),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+## パイプライン
+
+複数の作業をパイプで組み合わせることを「パイプライン」と言います。
+
+- Q8: 以下のパイプラインを組んでください。
+  - `gapminder`から始めて、1997年のヨーロッパ（「Europe」）のデータだけに絞って、人口を万人単位に変えて、人口の小さい順から並び替えてください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+
+```{r europe-pipeline, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
+____ |>
+   filter(____) |>
+   mutate(____) |>
+   arrange(____)
+```
+
+```{r europe-pipeline-check}
+  correct_pipeline_result <- gapminder |>
+    filter(year == 1997, continent == "Europe") |>
+    mutate(pop = pop/10000) |>
+    arrange(pop)
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(correct_pipeline_result)
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%"),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%.*filter.*\\|>|%>%.*mutate.*\\|>|%>%.*arrange.*"),
+      y = TRUE,
+      message = "パイプラインの順番が合っていません"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+- Q9: データパイプラインを組むことによって、以下の質問に答えてください：`gapminder`のデータの中で、2007年にアフリカ大陸（「Africa」）でもっとも一人当たりの国内総生産が多かった国はどこでしたか？
+
+```{r africa-gdp-example, exercise = TRUE, exercise.lines = 4}
+
+```
+
+```{r africa-gdp, echo=FALSE}
+question_text(
+  text = "国名を言葉一つで記入してください：",
+  answer_fn(function(value) {
+    answer_lc <- str_to_lower(value)
+    if (answer_lc == "gabon") {
+      correct()
+    } else if (answer_lc == "ガボン") {
+      correct()
+    } else if (answer_lc == "がぼん") {
+      correct()
+    } else if (str_detect(answer_lc, " |　")) {
+      incorrect("国名のみを入力してください（スペースなど使用しないでください）")
+    } else {
+      incorrect()
+    }
+  }, label = "国名"),
+  allow_retry = TRUE,
+  trim = TRUE
+)
+```
+
+## 確認と投稿
+
+```{r, echo=FALSE, results = "asis"}
+res <- knitr::knit_child(
+  system.file("rmd", "summarize_score.Rmd", package = "joholearnr"),
+  quiet = TRUE)
+cat(res, sep = '\n')
+```
