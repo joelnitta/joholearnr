@@ -71,6 +71,7 @@ gapminder <- janitor::clean_names(gapminder_raw)
 ```
 
 ```{r rename-gapminder-check}
+gapminder <- janitor::clean_names(gapminder_raw)
 grade_this({
   fail_if_not_equal(
     x = last_user_code_call(.user_code),
@@ -312,7 +313,7 @@ ____ |>
 
 - Q9: データパイプラインを組むことによって、以下の質問に答えてください：`gapminder`のデータの中で、2007年にアフリカ大陸（「Africa」）でもっとも一人当たりの国内総生産が多かった国はどこでしたか？
 
-```{r africa-gdp-example, exercise = TRUE, exercise.lines = 4}
+```{r africa-gdp-example, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
 
 ```
 
