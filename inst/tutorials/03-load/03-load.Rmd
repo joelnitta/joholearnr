@@ -219,7 +219,7 @@ getwd()
 grade_this_code()
 ```
 
-## 確認と投稿
+## 確認と提出
 
 ```{r, echo=FALSE, results = "asis"}
 res <- knitr::knit_child(
