@@ -100,6 +100,7 @@ grade_this({
 ## データを絞る
 
 - Q2: `filter()`関数を使って、`gapminder`から日本（"Japan"）のデータのみを抽出してください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
+  - ヒント：`filter()`に使う条件の記号については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E6%AF%94%E8%BC%83)を参考にしてください。
 
 ```{r filter-japan, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____)
