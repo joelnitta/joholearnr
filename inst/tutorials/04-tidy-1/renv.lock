@@ -52,6 +52,17 @@
       ],
       "Hash": "1920b2f11133b12350024297d8a4ff4a"
     },
+    "PKI": {
+      "Package": "PKI",
+      "Version": "0.1-14",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "base64enc"
+      ],
+      "Hash": "f5b9c6b2f62f1fa3dd53fd1ddccbb241"
+    },
     "R6": {
       "Package": "R6",
       "Version": "2.5.1",
@@ -855,7 +866,7 @@
       "RemoteRepo": "joholearnr",
       "RemoteUsername": "joelnitta",
       "RemotePkgRef": "joelnitta/joholearnr",
-      "RemoteSha": "3233920abad5aa3912d0c923bd214cb7964970f0",
+      "RemoteSha": "7152c5be5cb70c3bb0435f4a2cfff98e98f19728",
       "Requirements": [
         "R",
         "assertthat",
@@ -863,7 +874,7 @@
         "renv",
         "withr"
       ],
-      "Hash": "1ece3de0426df11ac0b0ef198a244419"
+      "Hash": "2b69306fa944b069c693471bc82720ff"
     },
     "jquerylib": {
       "Package": "jquerylib",
@@ -1137,6 +1148,18 @@
       ],
       "Hash": "c62edf62de70cadf40553e10c739049d"
     },
+    "packrat": {
+      "Package": "packrat",
+      "Version": "0.9.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "tools",
+        "utils"
+      ],
+      "Hash": "55ddd2d4a1959535f18393478b0c14a6"
+    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.9.0",
@@ -1394,6 +1417,29 @@
         "R"
       ],
       "Hash": "4c8415e0ec1e29f3f4f6fc108bef0144"
+    },
+    "rsconnect": {
+      "Package": "rsconnect",
+      "Version": "1.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "PKI",
+        "R",
+        "cli",
+        "curl",
+        "digest",
+        "jsonlite",
+        "lifecycle",
+        "openssl",
+        "packrat",
+        "renv",
+        "rlang",
+        "rstudioapi",
+        "tools",
+        "yaml"
+      ],
+      "Hash": "90dc9ac04cec50f25657b077d4aaca57"
     },
     "rstudioapi": {
       "Package": "rstudioapi",
