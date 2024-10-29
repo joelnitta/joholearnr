@@ -50,7 +50,7 @@ gapminder_raw
 
 ## 列名を変更する
 
-`gapminder_raw`には、大文字と小文字が混ざっている列名があります：`lifeExp`と`gdpPercap`。
+`gapminder_raw`には、大文字と小文字が混ざっている列名があります：`lifeExp`と`gdpPercap`。[授業で勉強したように](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%87%E3%83%BC%E3%82%BF%E6%95%B4%E7%90%86%E3%81%AE%E9%96%A2%E6%95%B0)、列名は小文字に揃えた方が使いやすいので、列名を変更したいと思います。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/rename%E3%81%A7%E5%88%97%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B)を参照してください。
 
 - Q1: `rename()`または`clean_names()`関数を使って、この列名を`life_exp`と`gdp_percap`というふうに変更してください（`clean_names()`を使う場合は`janitor`パッケージをロードする必要があります）。`gapminder`というオブジェクトとして保存し、最後に`gapminder`の中身を表示してください。
 
@@ -102,7 +102,6 @@ grade_this({
 `gapminder`のように、行が多いデータセットの特徴を知るために行の並び替えが大事です。`arrange()`は行を並び替える関数です。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/arrange%E3%81%A7%E8%A1%8C%E3%82%92%E4%B8%A6%E3%81%B3%E6%9B%BF%E3%81%88%E3%82%8B)を参照してください。
 
 - Q2: `arrange()`関数を使って、`gapminder`データを寿命（短いから長い方へ）と並び替えてください。
-  - （この質問以下からでは、結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）
 
 ```{r arrange-life-exp, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 arrange(____, ____)
@@ -178,8 +177,10 @@ question_text(
 
 ## データを絞る
 
+行の並び替えと同じように、条件で行を絞ることもデータの特徴を知る上で大事です。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/filter%E3%81%A7%E8%A1%8C%E3%82%92%E7%B5%9E%E3%82%8A%E8%BE%BC%E3%82%80)を参照してください。
+
 - Q5: `filter()`関数を使って、`gapminder`から日本（"Japan"）のデータのみを抽出してください。
-  - `filter()`に使う条件の記号については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E6%AF%94%E8%BC%83)を参考にしてください。
+  - ヒント：「イコール」は`=`ではなく、`==`を使ってください！
 
 ```{r filter-japan, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____)
@@ -202,7 +203,7 @@ filter(____, ____)
 
 ###
 
-`filter()`に`OR`（「もしくは」）という条件をかけたい時は、`|`を使います。例えば、大陸がアフリカまたはアジアに絞る：
+`filter()`に"or"（「もしくは」）という条件をかけたい時は、`|`を使います。例えば、大陸がアフリカ**または**アジアに絞る：
 
 ```{r filter-or-example, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
 filter(gapminder, continent == "Africa" | continent == "Asia")
@@ -233,7 +234,7 @@ filter(____, ____)
 
 `filter()`では、複数の条件を`,`で区切ることで複数条件で絞り込みが可能です。たとえば、1997年に絞り、人あたりのGDPが3万米ドルを超える国を抽出します。
 
-```{r filter-mult-example, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
+```{r filter-mult-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(gapminder, year == 1997, gdp_percap > 30000)
 ```
 
@@ -261,6 +262,8 @@ filter(____, ____, ____, ____)
 ## データを変更する
 
 ### 既存の列を変更する
+
+列の中身を変える時は`mutate()`（「変化させる」）変数を使います。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/mutate%E3%81%A7%E5%88%97%E3%81%AE%E4%B8%AD%E8%BA%AB%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B)を参照してください。
 
 - Q8: `mutate()`関数を使用して、`pop`を万人単位に変換してください。
 
