@@ -155,7 +155,8 @@ arrange(____, desc(____))
 question_text(
   text = "国名を言葉一つで記入してください：",
   answer_fn(function(value) {
-    answer_lc <- str_to_lower(value)
+    answer_lc <- str_to_lower(value) |>
+      str_remove_all("\\p{P}")
     if (answer_lc == "japan") {
       correct()
     } else if (answer_lc == "日本") {
@@ -219,7 +220,9 @@ filter(____, ____)
   grade_this({
     pass_if_equal(
       x = as.data.frame(.result),
-      y = as.data.frame(filter(gapminder, country == "Japan"))
+      y = as.data.frame(
+        filter(gapminder, country == "Japan" | country == "Taiwan")
+      )
     )
     fail_if_not_equal(
       x = inherits(.result, "data.frame"),
@@ -232,13 +235,13 @@ filter(____, ____)
 
 ###
 
-`filter()`では、カンマで区切ることで複数条件での絞り込みが可能です。たとえば、1997年で人あたりのGDPが3万米ドルを超える国に絞り込むには：
+`filter()`では、カンマで区切ることで複数条件での絞り込みが可能です。たとえば、1997年で一人当たりのGDPが3万米ドルを超える国に絞り込むには：
 
 ```{r filter-mult-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(gapminder, year == 1997, gdp_percap > 30000)
 ```
 
-- Q7: 2007年に、アジア大陸で寿命が65歳未満（65歳を含まない）の国だけに絞ってください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
+- Q7: 2007年に、アジア大陸（"Asia"）で寿命が65歳未満（65歳を含まない）の国だけに絞ってください。
 
 ```{r filter-asia-life, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____, ____, ____)
