@@ -23,9 +23,9 @@ moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=129387
 
 ## 準備
 
-必要なパッケージをロードしてから、今回の課題に使うデータを読み込みましょう。
+必要なパッケージをロードし、今回の課題で使用するデータを読み込みましょう。
 
-今回のデータはURLから読み込みます。世界各国の経済データを含む「gapminder」というデータセットです。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/> を参照してください。
+今回のデータはURLから読み込みます。世界各国の経済データを含む「gapminder」というデータセットです。詳細については、<https://www.gapminder.org/> を参照してください。
 
 まずは生データを読み込み、`gapminder_raw`として保存します。
 
@@ -50,9 +50,9 @@ gapminder_raw
 
 ## 列名を変更する
 
-`gapminder_raw`には、大文字と小文字が混ざっている列名があります：`lifeExp`と`gdpPercap`。[授業で勉強したように](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%87%E3%83%BC%E3%82%BF%E6%95%B4%E7%90%86%E3%81%AE%E9%96%A2%E6%95%B0)、列名は小文字に揃えた方が使いやすいので、列名を変更したいと思います。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/rename%E3%81%A7%E5%88%97%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B)を参照してください。
+`gapminder_raw`には、大文字と小文字が混ざっている列名があります：`lifeExp`と`gdpPercap`。[授業で勉強したように](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E6%95%B4%E7%90%86%E5%88%97%E5%90%8D%E3%82%92%E6%95%B4%E3%81%88%E3%82%8B)、列名は小文字に揃えた方が使いやすいので、列名を変更します。詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/rename%E3%81%A7%E5%88%97%E5%90%8D%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B)を参照してください。
 
-- Q1: `rename()`または`clean_names()`関数を使って、この列名を`life_exp`と`gdp_percap`というふうに変更してください（`clean_names()`を使う場合は`janitor`パッケージをロードする必要があります）。`gapminder`というオブジェクトとして保存し、最後に`gapminder`の中身を表示してください。
+- Q1: `rename()`または`clean_names()`関数を使って、この列名を`life_exp`と`gdp_percap`に変更してください（`clean_names()`を使う場合は`janitor`パッケージをロードする必要があります）。`gapminder`というオブジェクトとして保存し、最後に`gapminder`の中身を表示してください。
 
 ```{r load-data-hide, echo = FALSE}
 gapminder_raw <- read_csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/gapminder_data.csv")
@@ -86,7 +86,7 @@ grade_this({
 })
 ```
 
-### データの説明
+### データの説明（変更後）
 
 列名を変更した結果、`gapminder`の列は次のようになります：
 
@@ -99,9 +99,9 @@ grade_this({
 
 ## 行の順番を並び替える
 
-`gapminder`のように、行が多いデータセットの特徴を知るために行の並び替えが大事です。`arrange()`は行を並び替える関数です。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/arrange%E3%81%A7%E8%A1%8C%E3%82%92%E4%B8%A6%E3%81%B3%E6%9B%BF%E3%81%88%E3%82%8B)を参照してください。
+データセットの特徴を理解するために、行の並び替えが大切です。`arrange()`は行を並び替える関数です。詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/arrange%E3%81%A7%E8%A1%8C%E3%82%92%E4%B8%A6%E3%81%B3%E6%9B%BF%E3%81%88%E3%82%8B)を参照してください。
 
-- Q2: `arrange()`関数を使って、`gapminder`データを寿命（短いから長い方へ）と並び替えてください。
+- Q2: `arrange()`関数を使って、`gapminder`データを寿命（短い順から長い順）で並び替えてください。
 
 ```{r arrange-life-exp, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 arrange(____, ____)
@@ -124,7 +124,7 @@ arrange(____, ____)
 
 `arrange()`はデフォルトで小さい方から大きい方へと並び替えますが、列名を`desc()`の中に入れると、逆の順になります（大きい → 小さい）。
 
-- Q3: 一人当たりの国内総生産を大きな順から並び替えてください：
+- Q3: 一人当たりの国内総生産を大きい順に並び替えてください。
 
 ```{r arrange-desc-gdp, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 arrange(____, desc(____))
@@ -145,7 +145,7 @@ arrange(____, desc(____))
   })
 ```
 
-- Q4: このデータセットの中で、最も長い寿命の国はどこですか？ `arrange()`を使って求めてください。
+- Q4: このデータセットの中で、最も寿命が長い国はどこですか？ `arrange()`を使って求めてください。
 
 ```{r life-exp-highest-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 
@@ -177,7 +177,7 @@ question_text(
 
 ## データを絞る
 
-行の並び替えと同じように、条件で行を絞ることもデータの特徴を知る上で大事です。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/filter%E3%81%A7%E8%A1%8C%E3%82%92%E7%B5%9E%E3%82%8A%E8%BE%BC%E3%82%80)を参照してください。
+行の並び替えと同様に、条件を指定して行を絞ることもデータの特徴を理解する上で大事です。詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/filter%E3%81%A7%E8%A1%8C%E3%82%92%E7%B5%9E%E3%82%8A%E8%BE%BC%E3%82%80)を参照してください。
 
 - Q5: `filter()`関数を使って、`gapminder`から日本（"Japan"）のデータのみを抽出してください。
   - ヒント：「イコール」は`=`ではなく、`==`を使ってください！
@@ -203,13 +203,13 @@ filter(____, ____)
 
 ###
 
-`filter()`に"or"（「もしくは」）という条件をかけたい時は、`|`を使います。例えば、大陸がアフリカ**または**アジアに絞る：
+`filter()`で"or"（「もしくは」）という条件を指定する際は、`|`を使います。例えば、大陸がアフリカ**または**アジアに該当する行に絞る場合：
 
 ```{r filter-or-example, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
 filter(gapminder, continent == "Africa" | continent == "Asia")
 ```
 
-- Q6: `filter()`関数を使って、`gapminder`から日本（"Japan"）、もしくは台湾（"Taiwan"）のデータのみを抽出してください。
+- Q6: `filter()`関数を使って、`gapminder`から日本（"Japan"）、または台湾（"Taiwan"）のデータのみを抽出してください。
 
 ```{r filter-japan-taiwan, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____)
@@ -232,7 +232,7 @@ filter(____, ____)
 
 ###
 
-`filter()`では、複数の条件を`,`で区切ることで複数条件で絞り込みが可能です。たとえば、1997年に絞り、人あたりのGDPが3万米ドルを超える国を抽出します。
+`filter()`では、カンマで区切ることで複数条件での絞り込みが可能です。たとえば、1997年で人あたりのGDPが3万米ドルを超える国に絞り込むには：
 
 ```{r filter-mult-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(gapminder, year == 1997, gdp_percap > 30000)
@@ -263,7 +263,7 @@ filter(____, ____, ____, ____)
 
 ### 既存の列を変更する
 
-列の中身を変える時は`mutate()`（「変化させる」）変数を使います。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/mutate%E3%81%A7%E5%88%97%E3%81%AE%E4%B8%AD%E8%BA%AB%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B)を参照してください。
+列の内容を変更する際には`mutate()`関数を使います。詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/mutate%E3%81%A7%E5%88%97%E3%81%AE%E4%B8%AD%E8%BA%AB%E3%82%92%E5%A4%89%E3%81%88%E3%82%8B)を参照してください。
 
 - Q8: `mutate()`関数を使用して、`pop`を万人単位に変換してください。
 
@@ -288,7 +288,7 @@ mutate(____, ____)
 
 ###
 
-- Q9: `mutate()`関数を使用して、`gdp_percap`を米ドルから日本円に変換してください（1米ドル = 150日本円というレートを使ってください）。
+- Q9: `mutate()`関数を使用して、`gdp_percap`を米ドルから日本円に変換してください（1米ドル = 150日本円というレートを使用）。
 
 ```{r mutate-gdp-percap, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 mutate(____, ____)
@@ -311,9 +311,9 @@ mutate(____, ____)
 
 ### 新しい列を作成する
 
-`mutate(列名 = 新しい列を作成する計算式)`の形で使いますが、指定した`列名`が存在しない場合は、新しい列が作成されます。
+`mutate(列名 = 新しい列を作成する計算式)`という形で指定した場合、指定された`列名`が存在しなければ新しい列が作成されます。
 
-たとえば、寿命の相対値を`life_exp_rel`として計算します。
+たとえば、寿命の相対的な値を`life_exp_rel`として計算するには：
 
 ```{r mutate-new-example, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
 mutate(gapminder, life_exp_rel = life_exp / max(life_exp))
