@@ -1,0 +1,182 @@
+---
+title: "データの整理（2）"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(gradethis)
+library(learnr)
+library(joholearnr)
+library(learnrhash)
+suppressPackageStartupMessages(library(tidyverse))
+
+gradethis::gradethis_setup()
+
+tutorial_options(exercise.reveal_solution = FALSE)
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1294525"
+```
+
+## 準備
+
+必要なパッケージをロードしてから、今回の課題に使うデータを読み込みましょう。
+
+前回の続きとして、世界各国の経済データを含む「gapminder」というデータセットをロードします。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/> を参照してください。
+
+まずは生データを読み込み、`gapminder_raw`として保存してから、列名を整えて、`gapminder`として保存します。
+
+```{r tidyverse-example, exercise = TRUE, exercise.lines = 6}
+library(tidyverse)
+library(janitor)
+
+# 生データをロードする
+gapminder_raw <- read_csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/gapminder_data.csv")
+
+# 列名を整える
+gapminder <- clean_names(gapminder_raw)
+```
+
+## パイプ
+
+`|>`（パイプ）は、左側のオブジェクトを右側の関数に渡すための記号です。
+
+例えば、授業では[このように勉強しました](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%91%E3%82%A4%E3%83%97%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9)：
+
+> - `arrange(データ, 列名)`というような書き方をしてきましたが、パイプを使うとこのように書きます：
+  - `データ |> arrange(列名)`
+
+- Q1: パイプを使って、`pop`を万人単位に変換してください。
+
+```{r mutate-pop-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+____ |> mutate(____)
+```
+
+```{r mutate-pop-pipe-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(mutate(gapminder, pop = pop/10000))
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%.*mutate\\("),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+- Q2: パイプを使って、2007年に、アジア大陸で寿命が65歳未満（65歳を含まない）の国だけに絞ってください。
+
+```{r filter-asia-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+____ |> filter(____, ____, ____)
+```
+
+```{r filter-asia-pipe-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(filter(gapminder, continent == "Asia", life_exp < 65, year == 2007))
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%.*filter\\("),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+## パイプライン
+
+複数の操作をパイプでつなげて一連の作業を行うことを「パイプライン」と呼びます。
+
+- Q3: 次のパイプラインを組んでください。
+  - `gapminder`から始め、1997年のヨーロッパ（"Europe"）のデータを抽出し、人口を万人単位に変換して、人口の小さい順に並べてください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
+
+```{r europe-pipeline, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
+____ |>
+   filter(____) |>
+   mutate(____) |>
+   arrange(____)
+```
+
+```{r europe-pipeline-check}
+  correct_pipeline_result <- gapminder |>
+    filter(year == 1997, continent == "Europe") |>
+    mutate(pop = pop/10000) |>
+    arrange(pop)
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(correct_pipeline_result)
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%"),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = str_detect(.result, "\\|>|%>%.*filter.*\\|>|%>%.*mutate.*\\|>|%>%.*arrange.*"),
+      y = TRUE,
+      message = "パイプラインの順番が合っていません"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+- Q4: データパイプラインを組むことによって、以下の質問に答えてください：`gapminder`のデータの中で、2007年にアフリカ大陸（「Africa」）でもっとも一人当たりの国内総生産が多かった国はどこでしたか？
+
+```{r africa-gdp-example, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
+
+```
+
+```{r africa-gdp, echo=FALSE}
+question_text(
+  text = "国名を言葉一つで記入してください：",
+  answer_fn(function(value) {
+    answer_lc <- str_to_lower(value)
+    if (answer_lc == "gabon") {
+      correct()
+    } else if (answer_lc == "ガボン") {
+      correct()
+    } else if (answer_lc == "がぼん") {
+      correct()
+    } else if (str_detect(answer_lc, " |　")) {
+      incorrect("国名のみを入力してください（スペースなど使用しないでください）")
+    } else {
+      incorrect()
+    }
+  }, label = "国名"),
+  allow_retry = TRUE,
+  trim = TRUE
+)
+```
+
+## 確認と提出
+
+```{r, echo=FALSE, results = "asis"}
+res <- knitr::knit_child(
+  system.file("rmd", "summarize_score.Rmd", package = "joholearnr"),
+  quiet = TRUE)
+cat(res, sep = '\n')
+```

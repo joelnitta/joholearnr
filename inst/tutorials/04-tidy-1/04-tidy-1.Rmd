@@ -46,7 +46,7 @@ gapminder_raw
 - `pop`: 人口
 - `continent`: 大陸
 - `lifeExp`: 寿命（"Life Expectancy"）
-- `gdpPercap`: 一人当たりの国内総生産（"GDP per capita"）
+- `gdpPercap`: 一人当たりの国内総生産（"GDP per capita"、米ドル単位）
 
 ## 列名を変更する
 
@@ -95,12 +95,91 @@ grade_this({
 - `pop`: 人口
 - `continent`: 大陸
 - `life_exp`: 寿命（"Life Expectancy"）
-- `gdp_percap`: 一人当たりの国内総生産（"GDP per capita"）
+- `gdp_percap`: 一人当たりの国内総生産（"GDP per capita"、米ドル単位）
+
+## 行の順番を並び替える
+
+`gapminder`のように、行が多いデータセットの特徴を知るために行の並び替えが大事です。`arrange()`は行を並び替える関数です。使い方の詳細については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/arrange%E3%81%A7%E8%A1%8C%E3%82%92%E4%B8%A6%E3%81%B3%E6%9B%BF%E3%81%88%E3%82%8B)を参照してください。
+
+- Q2: `arrange()`関数を使って、`gapminder`データを寿命（短いから長い方へ）と並び替えてください。
+  - （この質問以下からでは、結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）
+
+```{r arrange-life-exp, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+arrange(____, ____)
+```
+
+```{r arrange-life-exp-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(arrange(gapminder, life_exp))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+`arrange()`はデフォルトで小さい方から大きい方へと並び替えますが、列名を`desc()`の中に入れると、逆の順になります（大きい → 小さい）。
+
+- Q3: 一人当たりの国内総生産を大きな順から並び替えてください：
+
+```{r arrange-desc-gdp, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+arrange(____, desc(____))
+```
+
+```{r arrange-desc-gdp-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(arrange(gapminder, desc(gdp_percap)))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+- Q4: このデータセットの中で、最も長い寿命の国はどこですか？ `arrange()`を使って求めてください。
+
+```{r life-exp-highest-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+
+```
+
+```{r life-exp-highest, echo = FALSE}
+question_text(
+  text = "国名を言葉一つで記入してください：",
+  answer_fn(function(value) {
+    answer_lc <- str_to_lower(value)
+    if (answer_lc == "japan") {
+      correct()
+    } else if (answer_lc == "日本") {
+      correct()
+    } else if (answer_lc == "にほん") {
+      correct()
+    } else if (answer_lc == "ニホン") {
+      correct()
+    } else if (str_detect(answer_lc, " |　")) {
+      incorrect("国名のみを入力してください（スペースなど使用しないでください）")
+    } else {
+      incorrect()
+    }
+  }, label = "国名"),
+  allow_retry = TRUE,
+  trim = TRUE
+)
+```
 
 ## データを絞る
 
-- Q2: `filter()`関数を使って、`gapminder`から日本（"Japan"）のデータのみを抽出してください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
-  - ヒント：`filter()`に使う条件の記号については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E6%AF%94%E8%BC%83)を参考にしてください。
+- Q5: `filter()`関数を使って、`gapminder`から日本（"Japan"）のデータのみを抽出してください。
+  - `filter()`に使う条件の記号については、[講義のスライド](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E6%AF%94%E8%BC%83)を参考にしてください。
 
 ```{r filter-japan, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____)
@@ -121,13 +200,44 @@ filter(____, ____)
   })
 ```
 
+###
+
+`filter()`に`OR`（「もしくは」）という条件をかけたい時は、`|`を使います。例えば、大陸がアフリカまたはアジアに絞る：
+
+```{r filter-or-example, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
+filter(gapminder, continent == "Africa" | continent == "Asia")
+```
+
+- Q6: `filter()`関数を使って、`gapminder`から日本（"Japan"）、もしくは台湾（"Taiwan"）のデータのみを抽出してください。
+
+```{r filter-japan-taiwan, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+filter(____, ____)
+```
+
+```{r filter-japan-taiwan-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(filter(gapminder, country == "Japan"))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+###
+
 `filter()`では、複数の条件を`,`で区切ることで複数条件で絞り込みが可能です。たとえば、1997年に絞り、人あたりのGDPが3万米ドルを超える国を抽出します。
 
 ```{r filter-mult-example, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
 filter(gapminder, year == 1997, gdp_percap > 30000)
 ```
 
-- Q3: 2007年に、アジア大陸で寿命が65歳未満（65歳を含まない）の国だけに絞ってください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
+- Q7: 2007年に、アジア大陸で寿命が65歳未満（65歳を含まない）の国だけに絞ってください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
 
 ```{r filter-asia-life, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 filter(____, ____, ____, ____)
@@ -152,7 +262,7 @@ filter(____, ____, ____, ____)
 
 ### 既存の列を変更する
 
-- Q4: `mutate()`関数を使用して、`pop`を万人単位に変換してください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
+- Q8: `mutate()`関数を使用して、`pop`を万人単位に変換してください。
 
 ```{r mutate-pop, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 mutate(____, ____)
@@ -163,6 +273,29 @@ mutate(____, ____)
     pass_if_equal(
       x = as.data.frame(.result),
       y = as.data.frame(mutate(gapminder, pop = pop/10000))
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    fail()
+  })
+```
+
+###
+
+- Q9: `mutate()`関数を使用して、`gdp_percap`を米ドルから日本円に変換してください（1米ドル = 150日本円というレートを使ってください）。
+
+```{r mutate-gdp-percap, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+mutate(____, ____)
+```
+
+```{r mutate-gdp-percap-check}
+  grade_this({
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(mutate(gapminder, gdp_percap = gdp_percap*150))
     )
     fail_if_not_equal(
       x = inherits(.result, "data.frame"),
@@ -187,7 +320,7 @@ mutate(gapminder, life_exp_rel = life_exp / max(life_exp))
 
 ###
 
-Q5: 一人当たりの国内総生産（`gdp_percap`）を人口（`pop`）にかけることによって、国内総生産（`gdp`）を計算してください（結果は新しいオブジェクトとして保存してもしなくてもいいですが、コードの出力はデータフレームにしないといけません）。
+- Q10: 一人当たりの国内総生産（`gdp_percap`）を人口（`pop`）にかけることによって、国内総生産（`gdp`）を計算してください。
 
 ```{r mutate-gdp, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
 mutate(____, ____)
@@ -206,138 +339,6 @@ mutate(____, ____)
     )
     fail()
   })
-```
-
-## パイプ
-
-`|>`（パイプ）は、左側のオブジェクトを右側の関数に渡すための記号です。
-
-例えば、授業では[このように勉強しました](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%91%E3%82%A4%E3%83%97%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9)：
-
-> - `arrange(データ, 列名)`というような書き方をしてきましたが、パイプを使うとこのように書きます：
-  - `データ |> arrange(列名)`
-
-- Q6: パイプを使って、Q4の`pop`を万人単位に変換する操作をもう一度行ってください。
-
-```{r mutate-pop-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
-____ |> mutate(____)
-```
-
-```{r mutate-pop-pipe-check}
-  grade_this({
-    pass_if_equal(
-      x = as.data.frame(.result),
-      y = as.data.frame(mutate(gapminder, pop = pop/10000))
-    )
-    fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%.*mutate\\("),
-      y = TRUE,
-      message = "パイプを使う必要があります"
-    )
-    fail_if_not_equal(
-      x = inherits(.result, "data.frame"),
-      y = TRUE,
-      message = "最後の出力はデータフレームにする必要があります"
-    )
-    fail()
-  })
-```
-
-- Q7: パイプを使って、Q3の操作（2007年にアジア大陸で寿命が65歳未満の国のデータを抽出）をもう一度行ってください。
-
-```{r filter-asia-pipe, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
-____ |> filter(____)
-```
-
-```{r filter-asia-pipe-check}
-  grade_this({
-    pass_if_equal(
-      x = as.data.frame(.result),
-      y = as.data.frame(filter(gapminder, continent == "Asia", life_exp < 65, year == 2007))
-    )
-    fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%.*filter\\("),
-      y = TRUE,
-      message = "パイプを使う必要があります"
-    )
-    fail_if_not_equal(
-      x = inherits(.result, "data.frame"),
-      y = TRUE,
-      message = "最後の出力はデータフレームにする必要があります"
-    )
-    fail()
-  })
-```
-
-## パイプライン
-
-複数の操作をパイプでつなげて一連の作業を行うことを「パイプライン」と呼びます。
-
-- Q8: 次のパイプラインを組んでください。
-  - `gapminder`から始め、1997年のヨーロッパ（"Europe"）のデータを抽出し、人口を万人単位に変換して、人口の小さい順に並べてください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
-
-```{r europe-pipeline, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
-____ |>
-   filter(____) |>
-   mutate(____) |>
-   arrange(____)
-```
-
-```{r europe-pipeline-check}
-  correct_pipeline_result <- gapminder |>
-    filter(year == 1997, continent == "Europe") |>
-    mutate(pop = pop/10000) |>
-    arrange(pop)
-  grade_this({
-    pass_if_equal(
-      x = as.data.frame(.result),
-      y = as.data.frame(correct_pipeline_result)
-    )
-    fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%"),
-      y = TRUE,
-      message = "パイプを使う必要があります"
-    )
-    fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%.*filter.*\\|>|%>%.*mutate.*\\|>|%>%.*arrange.*"),
-      y = TRUE,
-      message = "パイプラインの順番が合っていません"
-    )
-    fail_if_not_equal(
-      x = inherits(.result, "data.frame"),
-      y = TRUE,
-      message = "最後の出力はデータフレームにする必要があります"
-    )
-    fail()
-  })
-```
-
-- Q9: データパイプラインを組むことによって、以下の質問に答えてください：`gapminder`のデータの中で、2007年にアフリカ大陸（「Africa」）でもっとも一人当たりの国内総生産が多かった国はどこでしたか？
-
-```{r africa-gdp-example, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
-
-```
-
-```{r africa-gdp, echo=FALSE}
-question_text(
-  text = "国名を言葉一つで記入してください：",
-  answer_fn(function(value) {
-    answer_lc <- str_to_lower(value)
-    if (answer_lc == "gabon") {
-      correct()
-    } else if (answer_lc == "ガボン") {
-      correct()
-    } else if (answer_lc == "がぼん") {
-      correct()
-    } else if (str_detect(answer_lc, " |　")) {
-      incorrect("国名のみを入力してください（スペースなど使用しないでください）")
-    } else {
-      incorrect()
-    }
-  }, label = "国名"),
-  allow_retry = TRUE,
-  trim = TRUE
-)
 ```
 
 ## 確認と提出
