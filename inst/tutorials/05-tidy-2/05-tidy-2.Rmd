@@ -21,6 +21,12 @@ tutorial_options(exercise.reveal_solution = FALSE)
 moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1294525"
 ```
 
+```{r clean-gapminder, echo = FALSE}
+gapminder_raw <- read_csv("https://joelnitta.com/gapminder")
+
+gapminder <- janitor::clean_names(gapminder_raw)
+```
+
 ## 準備
 
 必要なパッケージをロードしてから、今回の課題に使うデータを読み込みましょう。
@@ -29,15 +35,17 @@ moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=129452
 
 まずは生データを読み込み、`gapminder_raw`として保存してから、列名を整えて、`gapminder`として保存します。
 
-```{r tidyverse-example, exercise = TRUE, exercise.lines = 6}
+```{r tidyverse-example, exercise = TRUE, exercise.lines = 11}
 library(tidyverse)
 library(janitor)
 
 # 生データをロードする
-gapminder_raw <- read_csv("https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/main/episodes/data/gapminder_data.csv")
+gapminder_raw <- read_csv("https://joelnitta.com/gapminder")
 
 # 列名を整える
 gapminder <- clean_names(gapminder_raw)
+
+gapminder
 ```
 
 ## パイプ
@@ -57,12 +65,10 @@ ____ |> mutate(____)
 
 ```{r mutate-pop-pipe-check}
   grade_this({
-    pass_if_equal(
-      x = as.data.frame(.result),
-      y = as.data.frame(mutate(gapminder, pop = pop/10000))
-    )
+    user_code_text <- unlist(.user_code) |>
+      paste(collapse = " ")
     fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%.*mutate\\("),
+      x = str_detect(user_code_text, "\\|>|%>%.*mutate\\("),
       y = TRUE,
       message = "パイプを使う必要があります"
     )
@@ -70,6 +76,10 @@ ____ |> mutate(____)
       x = inherits(.result, "data.frame"),
       y = TRUE,
       message = "最後の出力はデータフレームにする必要があります"
+    )
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(mutate(gapminder, pop = pop/10000))
     )
     fail()
   })
@@ -83,12 +93,11 @@ ____ |> filter(____, ____, ____)
 
 ```{r filter-asia-pipe-check}
   grade_this({
-    pass_if_equal(
-      x = as.data.frame(.result),
-      y = as.data.frame(filter(gapminder, continent == "Asia", life_exp < 65, year == 2007))
-    )
+    user_code_text <- unlist(.user_code) |>
+      paste(collapse = " ")
+    print(user_code_text)
     fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%.*filter\\("),
+      x = str_detect(user_code_text, "\\|>|%>%.*filter\\("),
       y = TRUE,
       message = "パイプを使う必要があります"
     )
@@ -96,6 +105,10 @@ ____ |> filter(____, ____, ____)
       x = inherits(.result, "data.frame"),
       y = TRUE,
       message = "最後の出力はデータフレームにする必要があります"
+    )
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(gapminder |> filter(continent == "Asia", life_exp < 65, year == 2007))
     )
     fail()
   })
@@ -106,7 +119,7 @@ ____ |> filter(____, ____, ____)
 複数の操作をパイプでつなげて一連の作業を行うことを「パイプライン」と呼びます。
 
 - Q3: 次のパイプラインを組んでください。
-  - `gapminder`から始め、1997年のヨーロッパ（"Europe"）のデータを抽出し、人口を万人単位に変換して、人口の小さい順に並べてください（結果は新しいオブジェクトとして保存する必要はありませんが、コードの出力はデータフレームにしてください）。
+  - `gapminder`から始め、1997年のヨーロッパ（"Europe"）のデータを抽出し、人口を万人単位に変換して、人口の小さい順に並べてください。
 
 ```{r europe-pipeline, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
 ____ |>
@@ -121,24 +134,28 @@ ____ |>
     mutate(pop = pop/10000) |>
     arrange(pop)
   grade_this({
-    pass_if_equal(
-      x = as.data.frame(.result),
-      y = as.data.frame(correct_pipeline_result)
-    )
+    user_code_text <- unlist(.user_code) |>
+      paste(collapse = " ")
     fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%"),
+      x = str_detect(user_code_text, "\\|>|%>%"),
       y = TRUE,
       message = "パイプを使う必要があります"
     )
     fail_if_not_equal(
-      x = str_detect(.result, "\\|>|%>%.*filter.*\\|>|%>%.*mutate.*\\|>|%>%.*arrange.*"),
+      # (?s) turns on "dot-all" mode, allowing .* to match newlines and
+      # any characters.
+      x = str_detect(user_code_text, "(?s)filter.*mutate.*arrange"),
       y = TRUE,
-      message = "パイプラインの順番が合っていません"
+      message = "パイプラインの順序が正しくありません、または、必要なステップが含まれていない可能性があります"
     )
     fail_if_not_equal(
       x = inherits(.result, "data.frame"),
       y = TRUE,
       message = "最後の出力はデータフレームにする必要があります"
+    )
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(correct_pipeline_result)
     )
     fail()
   })
@@ -170,6 +187,151 @@ question_text(
   allow_retry = TRUE,
   trim = TRUE
 )
+```
+
+## グループ化
+
+グループ毎にデータの集計を行うためには、グループ化する必要があります。
+
+- Q5: `group_by()`を使って、大陸毎のグループを作ってください。詳細については[スライド](https://joelnitta.github.io/joho-shori/day5/#/%E3%82%B0%E3%83%AB%E3%83%BC%E3%83%97%E5%8C%96)を参照してください。
+
+```{r group-continent, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
+____ |>
+  group_by(____)
+```
+
+
+```{r, group-continent-check}
+grade_this({
+  pass_if_equal(
+    x = dplyr::groups(.result),
+    y = dplyr::groups(group_by(gapminder, continent))
+  )
+  fail()
+})
+```
+
+###
+
+グループ分けができたら、次に`summarize()`でグループ毎の集計ができます。詳細については[スライド](https://joelnitta.github.io/joho-shori/day5/#/0/44)を参照してください。
+
+集計をする際、以下の関数を覚えておくと便利です：
+
+- `max()`：最大値を計算する
+- `min()`：最小値を計算する
+- `mean()`：平均値を計算する
+- `sd()`：標準偏差を計算する
+- `n()`：それぞれのグループ毎のデータの数（行数）を数える
+
+- Q6: 大陸毎に一人当たりの国内総生産の平均を`mean_gdp_percap`という列を持って計算してください。
+
+```{r mean-gdp-continent, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
+____ |>
+  group_by(____) |>
+  summarize(____)
+```
+
+```{r, mean-gdp-continent-check}
+mean_gdp_continent <- gapminder |>
+  group_by(continent) |>
+  summarize(mean_gdp_percap = mean(gdp_percap))
+grade_this({
+  fail_if_not_equal(
+    x = str_detect(colnames(.result), "mean_gdp_percap"),
+    y = TRUE,
+    message = "'mean_gdp_percap'という列名を使ってください"
+  )
+  pass_if_equal(
+    x = .result[["mean_gdp_percap"]],
+    y = mean_gdp_continent[["mean_gdp_percap"]]
+  )
+  fail()
+})
+```
+
+### データ数の数え方
+
+`n()`はグループ毎のデータ数を数える関数ですが、`min()`や`max()`などとの使い方が少し異なります。
+
+`min()`や`max()`には列名を指定しないといけません（例えば、`min(life_exp)`）が、`n()`は括弧の中に何も書く必要がありません。
+
+例えば、大陸毎のデータ数を確認しましょう：
+
+```{r n-summarize-example, exercise = TRUE, exercise.lines = 5}
+gapminder |>
+  group_by(country) |>
+  summarize(
+    n_obs = n()
+  )
+```
+
+つまり、各国は12回ずつデータに現れます。
+
+これはどういうことか、一つの国だけに絞るもっと分かりやすくなります：
+
+```{r filter-example, exercise = TRUE, exercise.lines = 5}
+gapminder |>
+  filter(country == "Afghanistan")
+```
+
+各国のデータは1952年に始まって、2007年に終わりますが、**毎年データがあるわけではありません**。
+
+各国に合計12年分のデータがあるようです。
+
+###
+
+カンマを使うことによって、同時に複数の計算も可能です。
+
+例えば：
+
+```{r multiple-summarize-example, exercise = TRUE, exercise.lines = 5}
+gapminder |>
+  group_by(country) |>
+  summarize(
+    mean_life_exp = mean(life_exp),
+    sd_life_exp = sd(life_exp)
+  )
+```
+
+- Q7: 大陸毎に一人当たりの国内総生産の平均とを`mean_gdp_percap`という列で、それぞれの大陸のデータの数を`n_obs`という列で計算してください。
+
+```{r mean-gdp-n-continent, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
+____ |>
+  group_by(____) |>
+  summarize(____)
+```
+
+```{r, mean-gdp-n-continent-check}
+mean_gdp_n_continent <- gapminder |>
+  group_by(continent) |>
+  summarize(mean_gdp_percap = mean(gdp_percap), n_obs = n())
+grade_this({
+  fail_if_not_equal(
+    x = inherits(.result, "tbl"),
+    y = TRUE,
+    message =  "結果をデータフレーム（tibble）にする必要があります"
+  )
+  print(colnames(.result))
+  fail_if_not_equal(
+    x = "mean_gdp_percap" %in% colnames(.result),
+    y = TRUE,
+    message = "'mean_gdp_percap'という列名を使ってください"
+  )
+  fail_if_not_equal(
+    x = "n_obs" %in% colnames(.result),,
+    y = TRUE,
+    message = "'n_obs'という列名を使ってください"
+  )
+  fail_if_not_equal(
+    x = .result[["mean_gdp_percap"]],
+    y = mean_gdp_n_continent[["mean_gdp_percap"]]
+  )
+  fail_if_not_equal(
+    x = .result[["n_obs"]],
+    y = mean_gdp_n_continent[["n_obs"]]
+  )
+  pass()
+})
 ```
 
 ## 確認と提出
