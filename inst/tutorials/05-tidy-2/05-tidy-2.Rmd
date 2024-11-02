@@ -29,7 +29,7 @@ gapminder <- janitor::clean_names(gapminder_raw)
 
 ## 準備
 
-必要なパッケージをロードしてから、今回の課題に使うデータを読み込みましょう。
+必要なパッケージをロードしてから、今回の課題で使うデータを読み込みましょう。
 
 前回の続きとして、世界各国の経済データを含む「gapminder」というデータセットをロードします。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/> を参照してください。
 
@@ -52,7 +52,7 @@ gapminder
 
 `|>`（パイプ）は、左側のオブジェクトを右側の関数に渡すための記号です。
 
-例えば、授業では[このように勉強しました](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%91%E3%82%A4%E3%83%97%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9)：
+例えば、授業では[このように学習しました](https://joelnitta.github.io/joho-shori/day4/#/%E3%83%91%E3%82%A4%E3%83%97%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9)：
 
 > - `arrange(データ, 列名)`というような書き方をしてきましたが、パイプを使うとこのように書きます：
   - `データ |> arrange(列名)`
@@ -142,11 +142,9 @@ ____ |>
       message = "パイプを使う必要があります"
     )
     fail_if_not_equal(
-      # (?s) turns on "dot-all" mode, allowing .* to match newlines and
-      # any characters.
       x = str_detect(user_code_text, "(?s)filter.*mutate.*arrange"),
       y = TRUE,
-      message = "パイプラインの順序が正しくありません、または、必要なステップが含まれていない可能性があります"
+      message = "パイプラインの順序が正しくない、または、必要なステップが含まれていない可能性があります"
     )
     fail_if_not_equal(
       x = inherits(.result, "data.frame"),
@@ -161,7 +159,7 @@ ____ |>
   })
 ```
 
-- Q4: データパイプラインを組むことによって、以下の質問に答えてください：`gapminder`のデータの中で、2007年にアフリカ大陸（「Africa」）でもっとも一人当たりの国内総生産が多かった国はどこでしたか？
+- Q4: データパイプラインを組むことで、以下の質問に答えてください：`gapminder`のデータの中で、2007年にアフリカ大陸（「Africa」）でもっとも一人当たりの国内総生産が多かった国はどこですか？
 
 ```{r africa-gdp-example, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
 
@@ -169,7 +167,7 @@ ____ |>
 
 ```{r africa-gdp, echo=FALSE}
 question_text(
-  text = "国名を言葉一つで記入してください：",
+  text = "国名を一語で記入してください：",
   answer_fn(function(value) {
     answer_lc <- str_to_lower(value)
     if (answer_lc == "gabon") {
@@ -179,7 +177,7 @@ question_text(
     } else if (answer_lc == "がぼん") {
       correct()
     } else if (str_detect(answer_lc, " |　")) {
-      incorrect("国名のみを入力してください（スペースなど使用しないでください）")
+      incorrect("国名のみを入力してください（スペースを使用しないでください）")
     } else {
       incorrect()
     }
@@ -191,15 +189,14 @@ question_text(
 
 ## グループ化
 
-グループ毎にデータの集計を行うためには、グループ化する必要があります。
+グループごとにデータの集計を行うためには、グループ化する必要があります。
 
-- Q5: `group_by()`を使って、大陸毎のグループを作ってください。詳細については[スライド](https://joelnitta.github.io/joho-shori/day5/#/%E3%82%B0%E3%83%AB%E3%83%BC%E3%83%97%E5%8C%96)を参照してください。
+- Q5: `group_by()`を使って、大陸ごとのグループを作ってください。詳細については[スライド](https://joelnitta.github.io/joho-shori/day5/#/%E3%82%B0%E3%83%AB%E3%83%BC%E3%83%97%E5%8C%96)を参照してください。
 
 ```{r group-continent, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
 ____ |>
   group_by(____)
 ```
-
 
 ```{r, group-continent-check}
 grade_this({
@@ -211,9 +208,9 @@ grade_this({
 })
 ```
 
-###
+## 集計
 
-グループ分けができたら、次に`summarize()`でグループ毎の集計ができます。詳細については[スライド](https://joelnitta.github.io/joho-shori/day5/#/0/44)を参照してください。
+グループ分けができたら、次に`summarize()`でグループごとの集計ができます。詳細については[スライド](https://joelnitta.github.io/joho-shori/day5/#/0/44)を参照してください。
 
 集計をする際、以下の関数を覚えておくと便利です：
 
@@ -221,9 +218,9 @@ grade_this({
 - `min()`：最小値を計算する
 - `mean()`：平均値を計算する
 - `sd()`：標準偏差を計算する
-- `n()`：それぞれのグループ毎のデータの数（行数）を数える
+- `n()`：それぞれのグループごとのデータの数（行数）を数える
 
-- Q6: 大陸毎に一人当たりの国内総生産の平均を`mean_gdp_percap`という列を持って計算してください。
+- Q6: 大陸ごとに一人当たりの国内総生産の平均を`mean_gdp_percap`という列で計算してください。
 
 ```{r mean-gdp-continent, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
 ____ |>
@@ -251,11 +248,11 @@ grade_this({
 
 ### データ数の数え方
 
-`n()`はグループ毎のデータ数を数える関数ですが、`min()`や`max()`などとの使い方が少し異なります。
+`n()`はグループごとのデータ数を数える関数ですが、`min()`や`max()`などとの使い方が少し異なります。
 
 `min()`や`max()`には列名を指定しないといけません（例えば、`min(life_exp)`）が、`n()`は括弧の中に何も書く必要がありません。
 
-例えば、大陸毎のデータ数を確認しましょう：
+例えば、大陸ごとのデータ数を確認しましょう：
 
 ```{r n-summarize-example, exercise = TRUE, exercise.lines = 5}
 gapminder |>
@@ -267,7 +264,7 @@ gapminder |>
 
 つまり、各国は12回ずつデータに現れます。
 
-これはどういうことか、一つの国だけに絞るもっと分かりやすくなります：
+これはどういうことか、一つの国だけに絞るとより分かりやすくなります：
 
 ```{r filter-example, exercise = TRUE, exercise.lines = 5}
 gapminder |>
@@ -280,7 +277,7 @@ gapminder |>
 
 ###
 
-カンマを使うことによって、同時に複数の計算も可能です。
+カンマを使うことで、同時に複数の計算も可能です。
 
 例えば：
 
@@ -293,7 +290,7 @@ gapminder |>
   )
 ```
 
-- Q7: 大陸毎に一人当たりの国内総生産の平均とを`mean_gdp_percap`という列で、それぞれの大陸のデータの数を`n_obs`という列で計算してください。
+- Q7: 大陸ごとに一人当たりの国内総生産の平均を`mean_gdp_percap`という列で、それぞれの大陸のデータの数を`n_obs`という列で計算してください。
 
 ```{r mean-gdp-n-continent, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
 ____ |>
@@ -318,7 +315,7 @@ grade_this({
     message = "'mean_gdp_percap'という列名を使ってください"
   )
   fail_if_not_equal(
-    x = "n_obs" %in% colnames(.result),,
+    x = "n_obs" %in% colnames(.result),
     y = TRUE,
     message = "'n_obs'という列名を使ってください"
   )
