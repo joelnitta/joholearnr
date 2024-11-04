@@ -254,7 +254,7 @@ grade_this({
 
 例えば、大陸ごとのデータ数を確認しましょう：
 
-```{r n-summarize-example, exercise = TRUE, exercise.lines = 5}
+```{r n-summarize-example, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
 gapminder |>
   group_by(country) |>
   summarize(
@@ -266,7 +266,7 @@ gapminder |>
 
 これはどういうことか、一つの国だけに絞るとより分かりやすくなります：
 
-```{r filter-example, exercise = TRUE, exercise.lines = 5}
+```{r filter-example, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
 gapminder |>
   filter(country == "Afghanistan")
 ```
@@ -281,7 +281,7 @@ gapminder |>
 
 例えば：
 
-```{r multiple-summarize-example, exercise = TRUE, exercise.lines = 5}
+```{r multiple-summarize-example, exercise = TRUE, exercise.lines = 5, exercise.setup = "clean-gapminder"}
 gapminder |>
   group_by(country) |>
   summarize(
