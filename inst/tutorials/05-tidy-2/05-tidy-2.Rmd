@@ -234,7 +234,7 @@ mean_gdp_continent <- gapminder |>
   summarize(mean_gdp_percap = mean(gdp_percap))
 grade_this({
   fail_if_not_equal(
-    x = str_detect(colnames(.result), "mean_gdp_percap"),
+    x =  "mean_gdp_percap" %in% colnames(.result),
     y = TRUE,
     message = "'mean_gdp_percap'という列名を使ってください"
   )
