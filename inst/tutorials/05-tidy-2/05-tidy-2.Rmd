@@ -22,7 +22,7 @@ moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=129452
 ```
 
 ```{r clean-gapminder, echo = FALSE}
-gapminder_raw <- read_csv("https://bit.ly/3NLwKeP")
+gapminder_raw <- readr::read_csv("https://bit.ly/3NLwKeP")
 
 gapminder <- janitor::clean_names(gapminder_raw)
 ```
@@ -40,7 +40,7 @@ library(tidyverse)
 library(janitor)
 
 # 生データをロードする
-gapminder_raw <- read_csv("https://joelnitta.com/gapminder")
+gapminder_raw <- read_csv("https://bit.ly/3NLwKeP")
 
 # 列名を整える
 gapminder <- clean_names(gapminder_raw)
