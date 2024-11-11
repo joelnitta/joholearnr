@@ -12,6 +12,7 @@ library(gradethis)
 library(learnr)
 library(joholearnr)
 library(learnrhash)
+library(janitor)
 
 suppressPackageStartupMessages(library(tidyverse))
 
@@ -20,23 +21,8 @@ gradethis::gradethis_setup()
 tutorial_options(exercise.reveal_solution = FALSE)
 
 moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1298463"
-```
 
-## パッケージのロード
-
-必要なパッケージをロードします。
-
-- `tidyverse`はデータ処理に必要なパッケージです。
-- `janitor`は列名を整えるパッケージです。
-
-```{r packages-example, exercise = TRUE, exercise.lines = 2}
-library(tidyverse)
-library(janitor)
-```
-
-## データの結合
-
-```{r prep-menu-data, include = FALSE}
+# Set up data
 menu <- tribble(
   ~item, ~price,
   "ramen", 1000,
@@ -62,6 +48,20 @@ ingredients <- tribble(
   "sandwich", "lettuce", 45
 )
 ```
+
+## パッケージのロード
+
+必要なパッケージをロードします。
+
+- `tidyverse`はデータ処理に必要なパッケージです。
+- `janitor`は列名を整えるパッケージです。
+
+```{r packages-example, exercise = TRUE, exercise.lines = 2}
+library(tidyverse)
+library(janitor)
+```
+
+## データの結合
 
 解析したいデータが複数のファイル（あるいはデータフレーム）にまたがっていることがよくあります。この場合、データの**結合**を行う必要があります。
 
@@ -91,7 +91,7 @@ ingredients
 
 - Q1: `sales`にそれぞれの料理の値段（`menu`）を付け加えてください。パイプを使ってください。
 
-```{r join-sales-menu, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+```{r join-sales-menu, exercise = TRUE, exercise.lines = 2}
 ____ |> left_join(____)
 ```
 
@@ -129,7 +129,7 @@ ____ |> left_join(____)
 
 - Q2: 結合に使う列名を指定しながら、`sales`にそれぞれの料理の値段（`menu`）を付け加えてください。パイプを使ってください。
 
-```{r join-sales-menu-by, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+```{r join-sales-menu-by, exercise = TRUE, exercise.lines = 2}
 ____ |> left_join(____, ____)
 ```
 
@@ -180,7 +180,7 @@ ingredients
 
 デフォルトで`menu`に`ingredients`を結合してみましょう：
 
-```{r join-menu-ingredient-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+```{r join-menu-ingredient-example, exercise = TRUE, exercise.lines = 2}
 menu |> left_join(ingredients)
 ```
 
@@ -190,7 +190,7 @@ menu |> left_join(ingredients)
 
 - Q3: 結合に使う列名を指定しながら、`menu`に材料の値段（`ingredients`）を付け加えてください。パイプを使ってください。
 
-```{r join-sales-ingredient-by, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+```{r join-sales-ingredient-by, exercise = TRUE, exercise.lines = 2}
 ____ |> left_join(____, ____)
 ```
 
@@ -247,7 +247,7 @@ menu |>
 
 - Q4: `sales`を出発点として、メニューのデータ（`menu`）を加え、それぞれの料理での利益額（`income_per_item`）を計算し、最後に売り上げ全体の合計（`grand_total`）を求めてください。
 
-```{r calculate-total, exercise = TRUE, exercise.lines = 5, exercise.setup = "prep-menu-data"}
+```{r calculate-total, exercise = TRUE, exercise.lines = 5}
 sales |>
   left_join(____) |>
   ____(income_per_item = number_sold * ____) |>
