@@ -1,0 +1,445 @@
+---
+title: "データの可視化（1）"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(gradethis)
+library(learnr)
+library(joholearnr)
+library(learnrhash)
+
+suppressPackageStartupMessages(library(tidyverse))
+
+gradethis::gradethis_setup()
+
+tutorial_options(exercise.reveal_solution = FALSE)
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1298463"
+```
+
+## パッケージのロード
+
+必要なパッケージをロードします。
+
+- `tidyverse`はデータ処理に必要なパッケージです。
+- `janitor`は列名を整えるパッケージです。
+
+```{r packages-example, exercise = TRUE, exercise.lines = 2}
+library(tidyverse)
+library(janitor)
+```
+
+## データの結合
+
+```{r prep-menu-data, echo = FALSE}
+menu <- tribble(
+  ~item, ~price,
+  "ramen", 1000,
+  "gyoza", 650,
+  "sandwich", 500
+)
+
+sales <- tribble(
+  ~item, ~meal_time, ~number_sold,
+  "ramen", "dinner", 3,
+  "gyoza", "dinner", 3,
+  "sandwich", "lunch", 3,
+  "ramen", "lunch", 2
+)
+
+ingredients <- tribble(
+  ~item, ~ingredient, ~price,
+  "ramen", "noodles", 50,
+  "ramen", "menma", 20,
+  "gyoza", "flour", 50,
+  "gyoza", "ground meat", 150,
+  "sandwich", "bread", 20,
+  "sandwich", "lettuce", 15
+)
+```
+
+解析したいデータが複数のファイル（あるいはデータフレーム）に跨いでいることがよくあります。この場合、データの**結合**を行う必要があります。
+
+R でデータフレームを結合させる関数は`left_join()`です。なぜ「left」かというと、左の方にあるデータフレームに右の方のデータフレームをくっ付けるからです。
+
+`left_join(元のデータフレーム, 追加したいデータフレーム)`と使います。パイプの場合は`元のデータフレーム |> left_join(追加したいデータフレーム)`です。
+
+###
+
+例えば、以下の二つのデータフレームがあるとしましょう：
+
+```{r}
+sales
+```
+
+```{r}
+menu
+```
+
+```{r}
+ingredients
+```
+
+`sales`はレストランの売り上げのデータです。`menu`にはそれぞれの料理の値段が含まれています。`ingredients`には料理に必要な材料および値段（百グラム単位）が含まれています。
+
+###
+
+- Q1: `sales`にそれぞれの料理の値段（`menu`）を付け加えてください。パイプを使ってください。
+
+```{r join-sales-menu, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+____ |> left_join(____)
+```
+
+```{r join-sales-menu-check}
+  grade_this({
+    user_code_text <- unlist(.user_code) |>
+      paste(collapse = " ")
+    fail_if_not_equal(
+      x = str_detect(user_code_text, "\\|>|%>%.*left_join\\("),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(left_join(sales, menu))
+    )
+    fail()
+  })
+```
+
+###
+
+デフォルトでは、`left_join`は二つのデータフレームに共通している列を基に結合を行います。
+
+データの結合の基になっている列を**鍵**（「key」と呼びます。
+
+鍵を自分で指定する場合は、`left_join(元のデータフレーム, 追加したいデータフレーム, by = join_by(列名))`と書きます。
+
+パイプを使う場合はこのように書きます：`元のデータフレーム |> left_join(追加したいデータフレーム, by = join_by(列名))`
+
+- Q2: 結合する基となっている列名を指定しながら、`sales`にそれぞれの料理の値段（`menu`）を付け加えてください。パイプを使ってください。
+
+```{r join-sales-menu-by, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+____ |> left_join(____, ____)
+```
+
+```{r join-sales-menu-by-check}
+  grade_this({
+    user_code_text <- unlist(.user_code) |>
+      paste(collapse = " ")
+    fail_if_not_equal(
+      x = str_detect(user_code_text, "\\|>|%>%.*left_join\\("),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = str_detect(user_code_text, "join_by\\(.*\\)"),
+      y = TRUE,
+      message = "join_by()を使う必要があります"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(left_join(sales, menu))
+    )
+    fail()
+  })
+```
+
+###
+
+`left_join()`が自動的に共通に持っている列を見つけてくれるなら、なぜ`join_by()`で指定することが必要でしょうか？
+
+特に必要なのは、それぞれのデータフレームに同じ名前を持っている列がそれぞれ異なる意味を持つケースです。
+
+例えば、もう一度`menu`と`ingredients`を見ましょう：
+
+```{r}
+menu
+```
+
+```{r}
+ingredients
+```
+
+`menu`の`price`はそれぞれのメニューに載っている料理の値段です。それに対して、`ingredients`の`price`はそれぞれの材料の値段です。
+
+デフォルトで`menu`に`ingredients`を結合しましょう：
+
+```{r join-menu-ingredient-example, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+menu |> left_join(ingredients)
+```
+
+結果の`ingredient`が全部`NA`（「該当しない」）になってしまいました。`price`を結合する条件として使おうとしたからです。
+
+###
+
+- Q3: 結合する基となっている列名を指定しながら、`menu`に材料の値段（`ingredients`）を付け加えてください。パイプを使ってください。
+
+```{r join-sales-ingredient-by, exercise = TRUE, exercise.lines = 2, exercise.setup = "prep-menu-data"}
+____ |> left_join(____, ____)
+```
+
+```{r join-sales-ingredient-by-check}
+  grade_this({
+    user_code_text <- unlist(.user_code) |>
+      paste(collapse = " ")
+    fail_if_not_equal(
+      x = str_detect(user_code_text, "\\|>|%>%.*left_join\\("),
+      y = TRUE,
+      message = "パイプを使う必要があります"
+    )
+    fail_if_not_equal(
+      x = str_detect(user_code_text, "join_by\\(.*\\)"),
+      y = TRUE,
+      message = "join_by()を使う必要があります"
+    )
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(left_join(menu, ingredients, by = join_by(item)))
+    )
+    fail()
+  })
+```
+
+###
+
+データの結合ができれば、データ解析でできることの範囲がずいぶん広がります。今まで勉強してきたデータ解析スキルと組み合わせてみましょう。
+
+- ヒント：次の質問の答えはちょっと長くなっています。最初からすべてのコードを実行しようとすると、それぞれの段階で何が起こっているのかがわかりづらいかもしれません。コメント（`#`）を一時的に入れると走らせたいコードだけを試すことができます。例えば、このコードはメニューの品目ごとの材料の値段を計算しますが、まずは最初の結合だけを確認します：
+
+```{r comment-1-example, exercise = TRUE, exercise.lines = 5}
+menu |>
+  left_join(ingredients, by = join_by(item)) # |>
+  # group_by(item) |>
+  # summarize(ingredient_cost_per_item = sum(price.y))
+```
+
+確認してから、`#`を消して残りの行も実行します：
+
+```{r comment-2-example, exercise = TRUE, exercise.lines = 5}
+menu |>
+  left_join(ingredients, by = join_by(item)) |>
+  group_by(item) |>
+  summarize(ingredient_cost_per_item = sum(price.y))
+```
+
+###
+
+- Q4: 売り上げ（`sales`）から初めて、メニューのデータ（`menu`）を加えて、それぞれの料理で儲かった額（`income_per_item`）を計算して、最後に売り上げの全部の合計（`grand_total`）を求めてください。
+
+```{r calculate-total, exercise = TRUE, exercise.lines = 5, exercise.setup = "prep-menu-data"}
+sales |>
+  left_join(____) |>
+  ____(income_per_item = number_sold * ____) |>
+  summarize(grand_total = sum(____))
+```
+
+```{r calculate-total-check}
+  answer <- sales |>
+    left_join(menu, by = join_by(item)) |>
+    mutate(income_per_item = number_sold * price) |>
+    summarize(grand_total = sum(income_per_item))
+  grade_this({
+    user_code_text <- unlist(.user_code) |>
+      paste(collapse = " ")
+    fail_if_not_equal(
+      x = inherits(.result, "data.frame"),
+      y = TRUE,
+      message = "最後の出力はデータフレームにする必要があります"
+    )
+    pass_if_equal(
+      x = as.data.frame(.result),
+      y = as.data.frame(answer)
+    )
+    fail()
+  })
+```
+
+## 可視化するデータの準備
+
+世界各国の経済データを含む「gapminder」というデータセットをロードします。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/> を参照してください。
+
+生データを読み込み、`gapminder_raw`として保存してから、列名を整えて、`gapminder`として保存します。
+
+```{r clean-gapminder, echo = FALSE, message = FALSE, warning = FALSE}
+gapminder_raw <- readr::read_csv("https://bit.ly/3NLwKeP")
+
+gapminder <- janitor::clean_names(gapminder_raw)
+```
+
+```{r tidyverse-example, exercise = TRUE, exercise.lines = 9}
+# 生データをロードする
+gapminder_raw <- read_csv("https://bit.ly/3NLwKeP")
+
+# 列名を整える
+gapminder <- clean_names(gapminder_raw)
+
+gapminder
+```
+
+## データの可視化
+
+### 入力データの指定
+
+この授業ではデータを可視化するには`ggplot2`パッケージを使いますが、`ggplot2`は`tidyverse`に含まれているため、個別に`library(ggplot2)`を実行する必要はありません。
+
+可視化の関数は`ggplot()`です（`ggplot2`はパッケージ名、`ggplot`は関数名です。間違えないように気を付けてください）。
+
+`ggplot(入力データ, データの表し方)`と書きます。まずは入力データを指定しましょう。
+
+- Q5: `gapminder`を可視化するコマンドを書いてください。データの表し方はまだ指定しないでください。表し方をまだ指定していないので、図はまだ空です。
+
+```{r ggplot-base, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+ggplot(____)
+```
+
+```{r ggplot-base-solution}
+ggplot(gapminder)
+```
+
+```{r ggplot-base-check}
+grade_this_code()
+```
+
+### データの現し方
+
+次にデータの現し方を指定します。`ggplot2`では、これを「aesthetics」（`aes`）と呼んでいます。
+
+データの現し方はこのように書きます：`aes(プロットの要素 = 列名)`。例えば、横軸（x）に人口を表したら、`aes(x = pop)`と書きます。複数の要素を使う場合はそれぞれをコンマで区切ります。
+
+- Q6: 年を横軸（`x`）にして、寿命（`life_exp`）を縦軸（`y`）にする`gapminder`を可視化するコマンドを書いてください。図の形はまだ指定しないでください。図の形はまだ指定していないので、図はまだ空です。
+
+```{r ggplot-aes, exercise = TRUE, exercise.lines = 2, exercise.setup = "clean-gapminder"}
+ggplot(____, aes(____))
+```
+
+```{r ggplot-aes-solution}
+ggplot(gapminder, aes(x = year, y = life_exp))
+```
+
+```{r ggplot-aes-check}
+grade_this_code()
+```
+
+### 図の形
+
+次に**図の形**を指定します。
+
+図の形は関数で指定します。形の関数はすべて`geom_`で始まります。例えば：
+
+- 点グラフ: `geom_point()`
+- 棒ブラフ: `geom_col()`
+- 線グラフ：`geom_line()`
+
+`ggplot()`関数の後に`+`と書いて、次の行に形の関数を書きます：
+
+```
+ggplot(入力データ, データの表し方) +
+  geom_形()
+```
+
+- Q7: 年を横軸（`x`）にして、寿命（`life_exp`）を縦軸（`y`）にする`gapminder`の点グラフを作成してください。（やっと図に何かが出るはずです）
+
+```{r ggplot-geom, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
+ggplot(____, aes(____)) +
+  ____
+```
+
+```{r ggplot-geom-solution}
+ggplot(gapminder, aes(x = year, y = life_exp)) +
+  geom_point()
+```
+
+```{r ggplot-geom-check}
+grade_this_code()
+```
+
+### 他の図の要素を加える
+
+この図から何が読み取れますか？寿命が少しずつ伸びているのは分かりますが、点が多すぎて詳細が分かりません。
+
+大陸を色で表すとデータに潜んでいるメッセージがもうちょっと分かるかもしれません。
+
+- Q8: 今までの図に加えて、大陸を色（`color`）で表してください。
+
+```{r ggplot-color, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
+ggplot(____, aes(____)) +
+  ____
+```
+
+```{r ggplot-color-solution}
+ggplot(gapminder, aes(x = year, y = life_exp, color = continent)) +
+  geom_point()
+```
+
+```{r ggplot-color-check}
+grade_this_code()
+```
+
+大陸ごとに寿命データが少し違うことが分かります。
+
+### 他のデータ処理コードと組み合わせる
+
+今まで学んできたデータ処理のコードと組み合わせることによって、データの可視化の活用範囲がさらに広がります。
+
+- Q9: `gapminder`を日本だけのデータに絞って、年が横軸に人口が縦軸になっている線グラフを作ってください。
+
+```{r ggplot-ja-line, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
+japan_data <- _____ |>
+  _____(country == "Japan")
+
+ggplot(____, aes(____)) +
+  ____
+```
+
+```{r ggplot-ja-line-solution}
+japan_data <- gapminder |>
+  filter(country == "Japan")
+
+ggplot(japan_data, aes(x = year, y = pop)) +
+  geom_line()
+```
+
+```{r ggplot-ja-line-check}
+grade_this_code()
+```
+
+## 確認と提出
+
+```{r, echo=FALSE, results = "asis"}
+# FIXME: should have an option for strip_output = TRUE in child document
+lines <- read_lines(system.file("rmd", "summarize_score.Rmd", package = "joholearnr")) |>
+  str_replace_all(
+    "learnrhash::encoder_logic\\(\\)",
+    "learnrhash::encoder_logic(strip_output = TRUE)"
+  )
+
+temp_file <- tempfile(fileext = ".Rmd")
+
+write_lines(lines, temp_file)
+
+res <- knitr::knit_child(
+  temp_file,
+  quiet = TRUE)
+cat(res, sep = '\n')
+```
