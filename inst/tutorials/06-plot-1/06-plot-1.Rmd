@@ -143,7 +143,7 @@ ____ |> left_join(____, ____)
       message = "パイプを使う必要があります"
     )
     fail_if_not_equal(
-      x = str_detect(user_code_text, "join_by\\(.*\\)"),
+      x = str_detect(user_code_text, "join_by.*\\(.*\\)"),
       y = TRUE,
       message = "join_by()を使う必要があります"
     )
@@ -204,7 +204,7 @@ ____ |> left_join(____, ____)
       message = "パイプを使う必要があります"
     )
     fail_if_not_equal(
-      x = str_detect(user_code_text, "join_by\\(.*\\)"),
+      x = str_detect(user_code_text, "join_by.*\\(.*\\)"),
       y = TRUE,
       message = "join_by()を使う必要があります"
     )
