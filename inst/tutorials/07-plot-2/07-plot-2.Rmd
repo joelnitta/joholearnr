@@ -1,0 +1,254 @@
+---
+title: "データの可視化（2）"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(gradethis)
+library(learnr)
+library(joholearnr)
+library(learnrhash)
+library(janitor)
+library(ggthemes)
+
+suppressPackageStartupMessages(library(tidyverse))
+
+gradethis::gradethis_setup()
+
+tutorial_options(exercise.reveal_solution = FALSE)
+
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1301175"
+```
+
+## パッケージのロード
+
+必要なパッケージをロードします。
+
+- `tidyverse`はデータ処理に必要なパッケージです。
+- `janitor`は列名を整えるパッケージです。
+- `ggthemes`は図の色などの設定を変えるパッケージです。
+
+```{r packages-example, exercise = TRUE, exercise.lines = 4}
+library(tidyverse)
+library(janitor)
+library(ggthemes)
+```
+
+## 可視化するデータの準備
+
+世界各国の経済データを含む「gapminder」というデータセットをロードします。このデータセットについて詳しく知りたい場合は、<https://www.gapminder.org/> を参照してください。
+
+生データを読み込み、`gapminder_raw`として保存してから、列名を整えて、`gapminder`として保存します。
+
+```{r clean-gapminder, echo = FALSE, message = FALSE, warning = FALSE}
+gapminder_raw <- readr::read_csv("https://bit.ly/3NLwKeP")
+
+gapminder <- janitor::clean_names(gapminder_raw)
+```
+
+```{r tidyverse-example, exercise = TRUE, exercise.lines = 9}
+# 生データをロードする
+gapminder_raw <- read_csv("https://bit.ly/3NLwKeP")
+
+# 列名を整える
+gapminder <- clean_names(gapminder_raw)
+
+gapminder
+```
+
+## モデルの追加
+
+図にモデルを加えるには、`geom_smooth()`関数を使います。
+
+いくつかのモデルの種類がありますが、この授業では線形モデル、つまり二つの変数の関係を一直線で表すモデルを使用します。でも全てのデータにおいて必ず線形モデルが適切なわけではないことを注意してください。
+
+`geom_smooth()`で線形モデルを指定するには、`geom_smooth(method = "lm")`と書きます（`lm`は「linear model」を意味します）。
+
+`geom_smooth()`は新しいレイヤーなので、`+`を使って、図作成のコマンドに追加します。
+
+- Q1: `gapminder`のデータを使って、横軸を年（`year`）、縦軸を寿命（`life_exp`）、色を大陸（`continent`）にし、点グラフの上に線形モデルを加えてください。モデルはそれぞれの大陸を別にしてください。
+
+```{r gapminder-model, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
+ggplot(data = gapminder, mapping = aes(x = ___, y = ____, color = ____)) +
+  geom_point() ____
+  ____
+```
+
+```{r gapminder-model-solution}
+ggplot(data = gapminder, mapping = aes(x = year, y = life_exp, color = continent)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+```{r gapminder-model-check}
+grade_this_code()
+```
+
+- Q2: 寿命の伸び率が最も早い大陸はどれでしょうか？
+
+```{r argument-name, echo=FALSE}
+question("一つ選んでください：",
+  answer("Africa"),
+  answer("Americas"),
+  answer("Asia", correct = TRUE),
+  answer("Europe"),
+  answer("Oceania"),
+  random_answer_order = TRUE,
+  allow_retry = TRUE
+)
+```
+
+## mappingの指定
+
+最初に`ggplot()`を使った時、`mapping`（データの表現方法）を`ggplot()`関数の中に書きましたが、`geom_()`関数の中にも書けます。
+
+- Q3: `gapminder`のデータを使って、横軸を年（`year`）、縦軸を寿命（`life_exp`）、色を大陸（`continent`）にし、点グラフを作成してください。`mapping`を`geom_point()`の中に書いてください。
+
+```{r gapminder-mapping-in-geom, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
+ggplot(data = gapminder) +
+  geom_point(____)
+```
+
+```{r gapminder-mapping-in-geom-solution}
+ggplot(data = gapminder) +
+  geom_point(mapping = aes(x = year, y = life_exp, color = continent))
+```
+
+```{r gapminder-mapping-in-geom-check}
+grade_this_code()
+```
+
+### `mapping`の配置の使い方
+
+`mapping`（データの表現方法）を書く場所によって、このような違いがあります：
+
+- `ggplot()`の中に`mapping`を書く：`mapping`が**全て**の`geom_()`に適応される
+- `geom_()`の中に`mapping`を書く：`mapping`がこの`geom_()`**だけに**適応される
+
+これを利用して、全部の大陸を一緒に扱うモデルを加えましょう。
+
+- Q4: `gapminder`のデータを使って、横軸を年（`year`）、縦軸を寿命（`life_exp`）、色を大陸（`continent`）にし、点グラフの上に線形モデルを加えてください。モデルは大陸を区別しないようにしてください（線が一本しかないようにしてください）。
+
+```{r gapminder-mapping-in-both, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
+ggplot(data = gapminder, mapping = aes(____, ____)) +
+  geom_point(mapping = aes(____)) +
+  geom_smooth(method = "lm")
+```
+
+```{r gapminder-mapping-in-both-solution}
+ggplot(data = gapminder, aes(x = year, y = life_exp)) +
+  geom_point(aes(color = continent)) +
+  geom_smooth(method = "lm")
+```
+
+```{r gapminder-mapping-in-both-check}
+grade_this_code()
+```
+
+## ラベル
+
+図を発表する際、データ解析と違うラベルを使う必要がよくあります。なぜなら、データ解析に使う列名は短く、打ちやすいようにする必要がありますが、そのような名前は必ずしもグラフを読む人にとって優しくないからです。例えば、列名はこのような名前を使います（`gdp_percap`）が、図はこのようなラベルを使います（"GDP per capita"）.
+
+ラベルを整えるには、`labs()`関数を使います。例えば、横軸（`x`）を`Population`としたい場合は、`labs(x = "Population")`と書きます。
+
+`labs()`は新しいレイヤーなので、`+`を使って、図作成のコマンドに追加します。
+
+- Q5: `gapminder`のデータを使って、横軸を年（`year`）、縦軸を寿命（`life_exp`）、色を大陸（`continent`）にし、点グラフを作成してください。そして、横軸（`x`）を"Year", 縦軸（`y`）を"Life expectancy"、色を"Continent"としてください（大文字と小文字に気をつけてください）。
+
+```{r gapminder-labels, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
+ggplot(data = gapminder, mapping = aes(____, ____, ____)) +
+  geom_point() +
+  labs(___, ____, ____)
+```
+
+```{r gapminder-labels-solution}
+ggplot(data = gapminder, mapping = aes(x = year, y = life_exp, color = continent)) +
+  geom_point() +
+  labs(x = "Year", y = "Life expectancy", color = "Continent")
+```
+
+```{r gapminder-labels-check}
+grade_this_code()
+```
+
+## 色
+
+ラベルだけでなく、色も誰にでも分かりやすくする必要があります。ggplot2のデフォルトの色は色覚異常の方にとって識別が難しい場合があります。
+
+`ggthemes`パッケージには色覚異常に配慮したカラーパレットが含まれいています（「パッケージのロード」ではすでにロードしました）。
+
+色を変えるコマンド`scale_color_colorblind()`は新しいレイヤーなので、`+`を使って、図作成のコマンドに追加します。
+
+- Q6: `gapminder`のデータを使って、横軸を年（`year`）、縦軸を寿命（`life_exp`）、色を大陸（`continent`）にし、点グラフを作成してください。そして、色を色覚異常の方にとって識別ができるようにしてください。
+
+```{r gapminder-colors, exercise = TRUE, exercise.lines = 4, exercise.setup = "clean-gapminder"}
+ggplot(data = gapminder, mapping = aes(____, ____, ____)) +
+  geom_point() ____
+  _____
+```
+
+```{r gapminder-colors-solution}
+ggplot(data = gapminder, mapping = aes(x = year, y = life_exp, color = continent)) +
+  geom_point() +
+  scale_color_colorblind()
+```
+
+```{r gapminder-colors-check}
+grade_this_code()
+```
+
+## 発表に使える図を用意する
+
+今まで学んだプログラミングスキルを活かして、発表に使える図を用意しましょう。
+
+- Q7: `gapminder`のデータを基に、以下の特徴を持つ**点グラフ**を作成してください:
+  - 横軸を年（`year`）、縦軸を寿命（`life_exp`）、色を大陸（`continent`）にする。
+  - 点グラフの上に線形モデルを加える。モデルはそれぞれの大陸を別にする。
+  - 横軸（`x`）をYear, 縦軸（`y`）をLife expectancy、色をContinentと書く。
+  - 色を色覚異常の方にとって識別ができるようにする。
+  - レイヤーの順番は：グラフの形状の設定 → モデルの設定 → ラベルの設定 → 色の設定にしてください。
+
+```{r gapminder-final, exercise = TRUE, exercise.lines = 6, exercise.setup = "clean-gapminder"}
+ggplot(data = ____, mapping = ____) +
+  geom_point() +
+  ____(method = "lm") +
+  labs(___) +
+  ____
+```
+
+```{r gapminder-final-solution}
+ggplot(data = gapminder, mapping = aes(x = year, y = life_exp, color = continent)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Year", y = "Life expectancy", color = "Continent") +
+  scale_color_colorblind()
+```
+
+```{r gapminder-final-check}
+grade_this_code()
+```
+
+## 確認と提出
+
+```{r, echo=FALSE, results = "asis"}
+# FIXME: should have an option for strip_output = TRUE in child document
+lines <- read_lines(system.file("rmd", "summarize_score.Rmd", package = "joholearnr")) |>
+  str_replace_all(
+    "learnrhash::encoder_logic\\(\\)",
+    "learnrhash::encoder_logic(strip_output = TRUE)"
+  )
+
+temp_file <- tempfile(fileext = ".Rmd")
+
+write_lines(lines, temp_file)
+
+res <- knitr::knit_child(
+  temp_file,
+  quiet = TRUE)
+cat(res, sep = '\n')
+```
+
