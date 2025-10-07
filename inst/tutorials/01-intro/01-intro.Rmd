@@ -17,7 +17,7 @@ gradethis::gradethis_setup()
 
 tutorial_options(exercise.reveal_solution = FALSE)
 
-moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1264655"
+moodle_url <- "https://moodle.gs.chiba-u.jp/moodle/mod/assign/view.php?id=1444804"
 ```
 
 ## Rを計算機として使う
