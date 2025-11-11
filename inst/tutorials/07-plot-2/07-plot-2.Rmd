@@ -14,6 +14,7 @@ library(joholearnr)
 library(learnrhash)
 library(janitor)
 library(ggthemes)
+library(gapminder)
 
 suppressPackageStartupMessages(library(tidyverse))
 
@@ -44,15 +45,18 @@ library(ggthemes)
 
 生データを読み込み、`gapminder_raw`として保存した後、列名を整え、`gapminder`として保存します。
 
+今回使うデータは`gapminder`というパッケージに入っています。
+`gapminder::gapminder`は、「`gapminder`パッケージに含まれている`gapminder`データを読み込む」という意味です。
+
 ```{r clean-gapminder, echo = FALSE, message = FALSE, warning = FALSE}
-gapminder_raw <- readr::read_csv("https://bit.ly/3NLwKeP")
+gapminder_raw <- gapminder::gapminder
 
 gapminder <- janitor::clean_names(gapminder_raw)
 ```
 
 ```{r tidyverse-example, exercise = TRUE, exercise.lines = 9}
 # 生データをロードする
-gapminder_raw <- read_csv("https://bit.ly/3NLwKeP")
+gapminder_raw <- gapminder::gapminder
 
 # 列名を整える
 gapminder <- clean_names(gapminder_raw)

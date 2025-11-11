@@ -13,6 +13,7 @@ library(learnr)
 library(joholearnr)
 library(learnrhash)
 library(janitor)
+library(gapminder)
 
 suppressPackageStartupMessages(library(tidyverse))
 
@@ -281,15 +282,18 @@ sales |>
 
 生データを読み込み、`gapminder_raw`として保存してから、列名を整えて、`gapminder`として保存します。
 
+今回使うデータは`gapminder`というパッケージに入っています。
+`gapminder::gapminder`は、「`gapminder`パッケージに含まれている`gapminder`データを読み込む」という意味です。
+
 ```{r clean-gapminder, echo = FALSE, message = FALSE, warning = FALSE}
-gapminder_raw <- readr::read_csv("https://bit.ly/3NLwKeP")
+gapminder_raw <- gapminder::gapminder
 
 gapminder <- janitor::clean_names(gapminder_raw)
 ```
 
 ```{r tidyverse-example, exercise = TRUE, exercise.lines = 9}
 # 生データをロードする
-gapminder_raw <- read_csv("https://bit.ly/3NLwKeP")
+gapminder_raw <- gapminder::gapminder
 
 # 列名を整える
 gapminder <- clean_names(gapminder_raw)
@@ -383,7 +387,7 @@ grade_this_code()
 - Q8: 今までの図に大陸を色（`color`）で表してください。
 
 ```{r ggplot-color, exercise = TRUE, exercise.lines = 3, exercise.setup = "clean-gapminder"}
-ggplot(____, aes(____)) +
+ggplot(____, aes(x = ____, y = ____, color = ____)) +
   ____
 ```
 
