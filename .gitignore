@@ -3,3 +3,4 @@
 *.Rproj
 *.Rhistory
 rsconnect/
+.DS_Store
