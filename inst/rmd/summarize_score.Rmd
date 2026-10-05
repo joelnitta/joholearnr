@@ -45,8 +45,15 @@ shiny::observeEvent(
       answers <-
         tibble::tibble(
           label = names(tutorial_state),
-          correct = purrr::map_chr(tutorial_state, "correct"),
-          timestamp = purrr::map_chr(tutorial_state, "timestamp")
+          # "correct" is logical; purrr >= 1.2 no longer coerces it in map_chr()
+          correct = purrr::map_chr(
+            tutorial_state,
+            function(x) as.character(if (is.null(x[["correct"]])) NA else x[["correct"]])
+          ),
+          timestamp = purrr::map_chr(
+            tutorial_state,
+            function(x) as.character(if (is.null(x[["timestamp"]])) NA else x[["timestamp"]])
+          )
         )
     } else {
       answers <- tibble::tibble(
